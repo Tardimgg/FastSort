@@ -1,1 +1,1 @@
-# FastSort
+# MyClass
