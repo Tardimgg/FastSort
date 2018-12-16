@@ -1,6 +1,15 @@
 class FastSort {
 
-    public static void sort(int[] array, Integer size, Integer max) {
+    public static void SortWithoutReturn(int[] array, Integer size, Integer max) {
+        sort(array, size, max);
+    }
+
+    public static int[] SortWithReturn(int[] array, Integer size, Integer max) {
+        sort(array, size, max);
+        return array;
+    }
+
+    private static void sort(int[] array, Integer size, Integer max) {
         int length = size != null ? size : array.length;
         if (max != null && max <= 110) {
             ShellSort(array);
@@ -88,5 +97,38 @@ class FastSort {
         }
         for (j = 0; j < n; j++)
             array[low + j] = Temp[j];
+    }
+}
+
+class Input {
+
+    private BufferedReader input;
+
+    Input() {
+        input = new BufferedReader(new InputStreamReader(System.in));
+    }
+
+    public int ReadInt() throws Exception {
+        return Integer.parseInt(input.readLine());
+    }
+
+    public long ReadLong() throws Exception {
+        return Long.parseLong(input.readLine());
+    }
+
+    public String ReadString() throws Exception {
+        return input.readLine();
+    }
+
+    public int[] ReadArrayInt(String split) throws Exception {
+        return Arrays.stream(input.readLine().split(split == null ? " " : split)).mapToInt(Integer::parseInt).toArray();
+    }
+
+    public long[] ReadArrayLong(String split) throws Exception {
+        return Arrays.stream(input.readLine().split(split == null ? " " : split)).mapToLong(Long::parseLong).toArray();
+    }
+
+    public String[] ReadArrayString(String split) throws Exception {
+        return input.readLine().split(split == null ? " " : split);
     }
 }
