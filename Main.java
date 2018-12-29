@@ -1,22 +1,125 @@
 class FastSort {
 
-    public static void SortWithoutReturn(int[] array, Integer size, Integer max) {
-        sort(array, size, max);
+    public static void SortWithoutReturn(int[] array, int sort) {
+        sort(array, sort);
     }
 
-    public static int[] SortWithReturn(int[] array, Integer size, Integer max) {
-        sort(array, size, max);
+    public static int[] SortWithReturn(int[] array, int sort) {
+        sort(array, sort);
         return array;
     }
 
-    private static void sort(int[] array, Integer size, Integer max) {
-        int length = size != null ? size : array.length;
-        if (max != null && max <= 110) {
+    private static void sort(int[] array, int ShellHeapMergeInsertionMySort) {
+        if (ShellHeapMergeInsertionMySort == 0){
             ShellSort(array);
-        } else if (length <= 500000) {
-            MergeSort(array, 0, length - 1);
-        } else {
+        }else if (ShellHeapMergeInsertionMySort == 1){
             HeapSort(array);
+        }else if (ShellHeapMergeInsertionMySort == 2){
+            MergeSort(array, 0, array.length - 1);
+        }else if (ShellHeapMergeInsertionMySort == 3){
+            insertionSort(array);
+        }else if (ShellHeapMergeInsertionMySort == 4){
+            StraightMergerSort(array);
+        }
+    }
+
+    private static void StraightMergerSort(int[] array) {
+        int size = array.length;
+        if (size == 0) {
+            return;
+        }
+        int length = (size / 2) + ((size % 2) == 0 ? 0 : 1);
+        Integer[][] ZeroBuffer = new Integer[length + length % 2][2];
+        Integer[][] FirstBuffer = new Integer[0][0];
+        for (int index = 0; index < length; index++) {
+            int ArrayIndex = index * 2;
+            int NextArrayIndex = index * 2 + 1;
+            if (NextArrayIndex < size) {
+                if (array[ArrayIndex] > array[NextArrayIndex]) {
+                    ZeroBuffer[index][0] = array[NextArrayIndex];
+                    ZeroBuffer[index][1] = array[ArrayIndex];
+                } else {
+                    ZeroBuffer[index][0] = array[ArrayIndex];
+                    ZeroBuffer[index][1] = array[NextArrayIndex];
+                }
+            } else {
+                ZeroBuffer[index][0] = array[ArrayIndex];
+            }
+        }
+        boolean position = false;
+        int pointer0;
+        int pointer;
+        int pointer1;
+        int number = 4;
+        int NewPointer;
+        int count;
+        Integer[][] NewBuffer;
+        Integer[][] OldBuffer;
+        length = (size / 4) + ((size % 4) == 0 ? 0 : 1);
+        while (true) {
+            pointer0 = 0;
+            count = (number / 2) - 1;
+            if (!position) {
+                FirstBuffer = new Integer[length + length % 2][number];
+                NewBuffer = FirstBuffer;
+                OldBuffer = ZeroBuffer;
+            } else {
+                ZeroBuffer = new Integer[length + length % 2][number];
+                NewBuffer = ZeroBuffer;
+                OldBuffer = FirstBuffer;
+            }
+            for (int i = 0; i < length; i++) {
+                pointer = 0;
+                pointer1 = 0;
+                NewPointer = pointer0 + 1;
+                if (length == 1) {
+                    for (int g = 0; g < size; g++) {
+                        if (pointer > count || OldBuffer[pointer0][pointer] == null) {
+                            array[g] = OldBuffer[NewPointer][pointer1];
+                            pointer1++;
+                        } else if (pointer1 > count || OldBuffer[NewPointer][pointer1] == null) {
+                            if (OldBuffer[pointer0][pointer] == null) {
+                                continue;
+                            }
+                            array[g] = OldBuffer[pointer0][pointer];
+                            pointer++;
+                        } else if (OldBuffer[pointer0][pointer] >= OldBuffer[NewPointer][pointer1]) {
+                            array[g] = OldBuffer[NewPointer][pointer1];
+                            pointer1++;
+                        } else {
+                            array[g] = OldBuffer[pointer0][pointer];
+                            pointer++;
+                        }
+                    }
+                    return;
+                }
+                for (int g = 0; g < number; g++) {
+                    if (pointer > count || OldBuffer[pointer0][pointer] == null) {
+                        if (OldBuffer[NewPointer][pointer1] == null) {
+                            continue;
+                        }
+                        NewBuffer[i][g] = OldBuffer[NewPointer][pointer1];
+                        pointer1++;
+                    } else if (pointer1 > count || OldBuffer[NewPointer][pointer1] == null) {
+                        if (OldBuffer[pointer0][pointer] == null) {
+                            continue;
+                        }
+                        NewBuffer[i][g] = OldBuffer[pointer0][pointer];
+                        pointer++;
+                    } else if (OldBuffer[pointer0][pointer] >= OldBuffer[NewPointer][pointer1]) {
+                        NewBuffer[i][g] = OldBuffer[NewPointer][pointer1];
+                        pointer1++;
+                    } else {
+                        NewBuffer[i][g] = OldBuffer[pointer0][pointer];
+                        pointer++;
+                    }
+                }
+                pointer0 += 2;
+            }
+            position = !position;
+            length = length / 2 + (length % 2 == 0 ? 0 : 1);
+            number *= 2;
+
         }
     }
 
@@ -98,6 +201,18 @@ class FastSort {
         for (j = 0; j < n; j++)
             array[low + j] = Temp[j];
     }
+
+    private static void insertionSort(int[] elements) {
+        for (int i = 1; i < elements.length; i++) {
+            int key = elements[i];
+            int j = i - 1;
+            while (j >= 0 && key < elements[j]) {
+                elements[j + 1] = elements[j];
+                j--;
+            }// end while loop
+            elements[j + 1] = key;
+        }// end for loop
+    }
 }
 
 class Input {
@@ -121,14 +236,49 @@ class Input {
     }
 
     public int[] ReadArrayInt(String split) throws Exception {
-        return Arrays.stream(input.readLine().split(split == null ? " " : split)).mapToInt(Integer::parseInt).toArray();
+        return Arrays.stream(input.readLine().split(split)).mapToInt(Integer::parseInt).toArray();
     }
 
     public long[] ReadArrayLong(String split) throws Exception {
-        return Arrays.stream(input.readLine().split(split == null ? " " : split)).mapToLong(Long::parseLong).toArray();
+        return Arrays.stream(input.readLine().split(split)).mapToLong(Long::parseLong).toArray();
     }
 
     public String[] ReadArrayString(String split) throws Exception {
-        return input.readLine().split(split == null ? " " : split);
+        return input.readLine().split(split);
+    }
+}
+
+class Output {
+    public void WriteArray(int[] array, String split) {
+        StringBuilder answer = new StringBuilder();
+        for (int index = 0; index < array.length; index++) {
+            answer.append(array[index]);
+            if (index + 1 < array.length) {
+                answer.append(split);
+            }
+        }
+        System.out.println(answer);
+    }
+
+    public void WriteArray(long[] array, String split) {
+        StringBuilder answer = new StringBuilder();
+        for (int index = 0; index < array.length; index++) {
+            answer.append(array[index]);
+            if (index + 1 < array.length) {
+                answer.append(split);
+            }
+        }
+        System.out.println(answer);
+    }
+
+    public void WriteArray(String[] array, String split) {
+        StringBuilder answer = new StringBuilder();
+        for (int index = 0; index < array.length; index++) {
+            answer.append(array[index]);
+            if (index + 1 < array.length) {
+                answer.append(split);
+            }
+        }
+        System.out.println(answer);
     }
 }
