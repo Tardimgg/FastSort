@@ -1,30 +1,61 @@
-class FastSort {
+class method {
 
-    public static void SortWithoutReturn(int[] array, int sort) {
-        sort(array, sort);
+    public static int gcd(int a, int b) { // NOD
+        if (b == 0) {
+            return a;
+        }
+        return gcd(b, a % b);
     }
 
-    public static int[] SortWithReturn(int[] array, int sort) {
-        sort(array, sort);
+    public static long gcd(long a, long b) {
+        if (b == 0) {
+            return a;
+        }
+        return gcd(b, a % b);
+    }
+
+    public static int lcm(int a, int b) { // NOK
+        return a / gcd(a, b) * b;
+    }
+
+    public static long lcm(long a, long b) {
+        return a / gcd(a, b) * b;
+    }
+}
+
+class FastSort {
+
+    public static void SortWithoutReturn(int[] array, int sort, int length) {
+        sort(array, sort, length);
+    }
+
+    public static int[] SortWithReturn(int[] array, int sort, int length) {
+        sort(array, sort, length);
         return array;
     }
 
-    private static void sort(int[] array, int ShellHeapMergeInsertionMySort) {
-        if (ShellHeapMergeInsertionMySort == 0){
-            ShellSort(array);
-        }else if (ShellHeapMergeInsertionMySort == 1){
-            HeapSort(array);
-        }else if (ShellHeapMergeInsertionMySort == 2){
-            MergeSort(array, 0, array.length - 1);
-        }else if (ShellHeapMergeInsertionMySort == 3){
-            insertionSort(array);
-        }else if (ShellHeapMergeInsertionMySort == 4){
-            StraightMergerSort(array);
+    private static void sort(int[] array, int ShellHeapMergeMyInsertionSort, int length) {
+        while (true) {
+            if (ShellHeapMergeMyInsertionSort == 0) {
+                ShellSort(array);
+            } else if (ShellHeapMergeMyInsertionSort == 1) {
+                HeapSort(array);
+            } else if (ShellHeapMergeMyInsertionSort == 2) {
+                MergeSort(array, 0, length - 1);
+            } else if (ShellHeapMergeMyInsertionSort == 3) {
+                StraightMergerSort(array, length);
+            } else if (ShellHeapMergeMyInsertionSort == 4) {
+                insertionSort(array);
+            } else {
+                Random random = new Random();
+                ShellHeapMergeMyInsertionSort = random.nextInt(4);
+                continue;
+            }
+            return;
         }
     }
 
-    private static void StraightMergerSort(int[] array) {
-        int size = array.length;
+    private static void StraightMergerSort(int[] array, int size) {
         if (size == 0) {
             return;
         }
@@ -209,9 +240,9 @@ class FastSort {
             while (j >= 0 && key < elements[j]) {
                 elements[j + 1] = elements[j];
                 j--;
-            }// end while loop
+            }
             elements[j + 1] = key;
-        }// end for loop
+        }
     }
 }
 
