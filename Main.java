@@ -21,41 +21,44 @@ class method {
     public static long lcm(long a, long b) {
         return a / gcd(a, b) * b;
     }
+
+    public static void exit() throws Exception {
+        Main.output.output.flush();
+        Main.input.input.close();
+        Main.output.output.close();
+    }
 }
 
 class FastSort {
 
-    public static void SortWithoutReturn(int[] array, int sort, int length) {
-        sort(array, sort, length);
+    public static void SortWithoutReturn(int[] array, int ShellHeapMergeMyInsertionSort, int length) {
+        sort(array, ShellHeapMergeMyInsertionSort, length);
     }
 
-    public static int[] SortWithReturn(int[] array, int sort, int length) {
-        sort(array, sort, length);
+    public static int[] SortWithReturn(int[] array, int ShellHeapMergeMyInsertionSort, int length) {
+        sort(array, ShellHeapMergeMyInsertionSort, length);
         return array;
     }
 
     private static void sort(int[] array, int ShellHeapMergeMyInsertionSort, int length) {
-        while (true) {
-            if (ShellHeapMergeMyInsertionSort == 0) {
-                ShellSort(array);
-            } else if (ShellHeapMergeMyInsertionSort == 1) {
-                HeapSort(array);
-            } else if (ShellHeapMergeMyInsertionSort == 2) {
-                MergeSort(array, 0, length - 1);
-            } else if (ShellHeapMergeMyInsertionSort == 3) {
-                StraightMergerSort(array, length);
-            } else if (ShellHeapMergeMyInsertionSort == 4) {
-                insertionSort(array);
-            } else {
-                Random random = new Random();
-                ShellHeapMergeMyInsertionSort = random.nextInt(4);
-                continue;
-            }
-            return;
+        Random random = new Random();
+        if (ShellHeapMergeMyInsertionSort < 0 || ShellHeapMergeMyInsertionSort > 4) {
+            ShellHeapMergeMyInsertionSort = random.nextInt(4);
+        }
+        if (ShellHeapMergeMyInsertionSort == 0) {
+            ShellSort(array);
+        } else if (ShellHeapMergeMyInsertionSort == 1) {
+            HeapSort(array);
+        } else if (ShellHeapMergeMyInsertionSort == 2) {
+            MergeSort(array, 0, length - 1);
+        } else if (ShellHeapMergeMyInsertionSort == 3) {
+            StraightMergeSort(array, length);
+        } else if (ShellHeapMergeMyInsertionSort == 4) {
+            insertionSort(array);
         }
     }
 
-    private static void StraightMergerSort(int[] array, int size) {
+    private static void StraightMergeSort(int[] array, int size) {
         if (size == 0) {
             return;
         }
@@ -154,7 +157,7 @@ class FastSort {
         }
     }
 
-    private static void ShellSort(int[] array) {
+    public static void ShellSort(int[] array) {
         int j;
         for (int gap = array.length / 2; gap > 0; gap /= 2) {
             for (int i = gap; i < array.length; i++) {
@@ -179,7 +182,6 @@ class FastSort {
     private static void shiftDown(int[] array, int i, int n) {
         int child;
         int tmp;
-
         for (tmp = array[i]; leftChild(i) < n; i = child) {
             child = leftChild(i);
             if (child != n - 1 && (array[child] < array[child + 1]))
@@ -212,13 +214,10 @@ class FastSort {
     }
 
     private static void merge(int[] array, int low, int mid, int high) {
-
         int n = high - low + 1;
         int[] Temp = new int[n];
-
         int i = low, j = mid + 1;
         int k = 0;
-
         while (i <= mid || j <= high) {
             if (i > mid)
                 Temp[k++] = array[j++];
@@ -248,10 +247,14 @@ class FastSort {
 
 class Input {
 
-    private BufferedReader input;
+    public BufferedReader input;
+    public static boolean FileInput = false;
 
     Input() {
-        input = new BufferedReader(new InputStreamReader(System.in));
+        try {
+            input = new BufferedReader(FileInput ? new FileReader("input.txt") : new InputStreamReader(System.in));
+        } catch (Exception error) {
+        }
     }
 
     public int ReadInt() throws Exception {
@@ -280,36 +283,74 @@ class Input {
 }
 
 class Output {
-    public void WriteArray(int[] array, String split) {
-        StringBuilder answer = new StringBuilder();
-        for (int index = 0; index < array.length; index++) {
-            answer.append(array[index]);
-            if (index + 1 < array.length) {
-                answer.append(split);
-            }
+
+    public BufferedWriter output;
+    public static boolean FileOutput = false;
+
+    Output() {
+        try {
+            output = new BufferedWriter(FileOutput ? new FileWriter("output.txt") : new OutputStreamWriter(System.out));
+        } catch (Exception error) {
         }
-        System.out.println(answer);
+    }
+
+    public void WriteArray(int[] array, String split) {
+        try {
+            int length = array.length;
+            for (int index = 0; index < length; index++){
+                output.write(Integer.toString(array[index]));
+                if (index + 1 != length){
+                    output.write(split);
+                }
+            }
+        }catch (Exception error){ }
+
+
     }
 
     public void WriteArray(long[] array, String split) {
-        StringBuilder answer = new StringBuilder();
-        for (int index = 0; index < array.length; index++) {
-            answer.append(array[index]);
-            if (index + 1 < array.length) {
-                answer.append(split);
+        try {
+            int length = array.length;
+            for (int index = 0; index < length; index++){
+                output.write(Long.toString(array[index]));
+                if (index + 1 != length){
+                    output.write(split);
+                }
             }
-        }
-        System.out.println(answer);
+        }catch (Exception error){ }
     }
 
     public void WriteArray(String[] array, String split) {
-        StringBuilder answer = new StringBuilder();
-        for (int index = 0; index < array.length; index++) {
-            answer.append(array[index]);
-            if (index + 1 < array.length) {
-                answer.append(split);
+        try {
+            int length = array.length;
+            for (int index = 0; index < length; index++){
+                output.write(array[index]);
+                if (index + 1 != length){
+                    output.write(split);
+                }
             }
+        }catch (Exception error){ }
+    }
+
+    public void WriteInt(int number, String split) {
+        try {
+            output.write(Integer.toString(number));
+            output.write(split);
+        } catch (Exception error) {
         }
-        System.out.println(answer);
+    }
+    public void WriteString(String number, String split) {
+        try {
+            output.write(number);
+            output.write(split);
+        } catch (Exception error) {
+        }
+    }
+    public void WriteLong(Long number, String split) {
+        try {
+            output.write(Long.toString(number));
+            output.write(split);
+        } catch (Exception error) {
+        }
     }
 }
