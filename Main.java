@@ -1,3 +1,14 @@
+public class Main {
+
+    public static Input input = new Input();
+    public static Output output = new Output();
+
+    public static void main(String[] args) throws Exception {
+        
+    }
+
+}
+
 class method {
 
     public static int gcd(int a, int b) { // NOD
