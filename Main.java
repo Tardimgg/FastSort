@@ -1,14 +1,3 @@
-public class Main {
-
-    public static Input input = new Input();
-    public static Output output = new Output();
-
-    public static void main(String[] args) throws Exception {
-        
-    }
-
-}
-
 class method {
 
     public static int gcd(int a, int b) { // NOD
@@ -34,9 +23,119 @@ class method {
     }
 
     public static void exit() throws Exception {
-        Main.output.output.flush();
-        Main.input.input.close();
-        Main.output.output.close();
+        Output.write.flush();
+        Input.read.close();
+        Output.write.close();
+    }
+}
+
+class graph {
+
+    private static int[][] base;
+    private static boolean[] used;
+    public static int quantity = 0;
+    private static Integer[] pred;
+
+    public static void start(int length) {
+        used = new boolean[length];
+        pred = new Integer[length];
+    }
+
+    public static void AdjacencyMatrixToDefault(int length, int dont) throws Exception {
+        start(length);
+        base = new int[length][];
+        List<Integer> buffer = new ArrayList<>();
+        int[] InputArray;
+        int size;
+        for (int i = 0; i < length; i++) {
+            InputArray = Input.ReadArrayInt(" ");
+            for (int index = 0; index < length; index++) {
+                if (i != index && InputArray[index] != dont) {
+                    buffer.add(index);
+                    buffer.add(InputArray[index]);
+                }
+            }
+            size = buffer.size();
+            base[i] = new int[size];
+            for (int k = 0; k < size; k++) {
+                base[i][k] = buffer.get(k);
+            }
+            buffer.clear();
+        }
+    }
+
+    public static void dfs(int position) throws Exception {
+        used[position] = true;
+        quantity++;
+        int next;
+        for (int index = 0; index < base[position].length; index += 2) {
+            next = base[position][index];
+            if (!used[next]) {
+                pred[next] = position;
+                dfs(next);
+            } else {
+                if (next != pred[position]) { // if cycle
+                    throw new Exception();
+                }
+            }
+        }
+    }
+
+    public static int dijkstra(int start, int stop, int size) {
+        start--;
+        stop--;
+        int[] dist = new int[size];
+        for (int i = 0; i < size; i++) {
+            if (i != start) {
+                dist[i] = Integer.MAX_VALUE;
+            }
+            pred[i] = start;
+        }
+        Queue<int[]> queue = new PriorityQueue<>((int[] first, int[] second) -> Integer.compare(first[1], second[1]));
+        queue.add(new int[]{start, 0});
+        int position;
+        int[] GetQueue;
+        while (queue.size() != 0) {
+            GetQueue = queue.poll();
+            position = GetQueue[0];
+            if (GetQueue[1] > dist[position]) {
+                continue;
+            }
+            for (int index = 0; index < base[position].length; index += 2) {
+                if (dist[position] + base[position][index + 1] < dist[base[position][index]] && !used[base[position][index]]) {
+                    dist[base[position][index]] = dist[position] + base[position][index + 1];
+                    pred[base[position][index]] = position;
+                    queue.add(new int[]{base[position][index], dist[base[position][index]]});
+                }
+            }
+            used[position] = true;
+        }
+        return dist[stop] == Integer.MAX_VALUE ? -1 : dist[stop];
+    }
+
+    public static boolean FloydWarshall(int[][] base, int length, int dont) {
+        for (int k = 0; k < length; k++) {
+            for (int i = 0; i < length; i++) {
+                for (int j = 0; j < length; j++) {
+                    if (base[i][k] == dont || base[k][j] == dont) {
+                        continue;
+                    }
+                    int total = base[i][k] + base[k][j];
+                    if (base[i][j] != dont) {
+                        base[i][j] = Math.min(base[i][j], total);
+                    } else {
+                        base[i][j] = total;
+                    }
+                }
+            }
+        }
+        for (int index = 0; index < length; index++) {
+            if (base[index][index] != 0) { // if cycle
+                return false;
+            }
+
+        }
+        return true;
     }
 }
 
@@ -258,110 +357,127 @@ class FastSort {
 
 class Input {
 
-    public BufferedReader input;
+    public static BufferedReader read;
     public static boolean FileInput = false;
 
     Input() {
         try {
-            input = new BufferedReader(FileInput ? new FileReader("input.txt") : new InputStreamReader(System.in));
+            read = new BufferedReader(FileInput ? new FileReader("input.txt") : new InputStreamReader(System.in));
         } catch (Exception error) {
         }
     }
 
-    public int ReadInt() throws Exception {
-        return Integer.parseInt(input.readLine());
+    public static int ReadInt() throws Exception {
+        return Integer.parseInt(read.readLine());
     }
 
-    public long ReadLong() throws Exception {
-        return Long.parseLong(input.readLine());
+    public static long ReadLong() throws Exception {
+        return Long.parseLong(read.readLine());
     }
 
-    public String ReadString() throws Exception {
-        return input.readLine();
+    public static String ReadString() throws Exception {
+        return read.readLine();
     }
 
-    public int[] ReadArrayInt(String split) throws Exception {
-        return Arrays.stream(input.readLine().split(split)).mapToInt(Integer::parseInt).toArray();
+    public static int[] ReadArrayInt(String split) throws Exception {
+        return Arrays.stream(read.readLine().split(split)).mapToInt(Integer::parseInt).toArray();
     }
 
-    public long[] ReadArrayLong(String split) throws Exception {
-        return Arrays.stream(input.readLine().split(split)).mapToLong(Long::parseLong).toArray();
+    public static long[] ReadArrayLong(String split) throws Exception {
+        return Arrays.stream(read.readLine().split(split)).mapToLong(Long::parseLong).toArray();
     }
 
-    public String[] ReadArrayString(String split) throws Exception {
-        return input.readLine().split(split);
+    public static String[] ReadArrayString(String split) throws Exception {
+        return read.readLine().split(split);
     }
 }
 
 class Output {
 
-    public BufferedWriter output;
+    public static BufferedWriter write;
     public static boolean FileOutput = false;
 
     Output() {
         try {
-            output = new BufferedWriter(FileOutput ? new FileWriter("output.txt") : new OutputStreamWriter(System.out));
+            write = new BufferedWriter(FileOutput ? new FileWriter("output.txt") : new OutputStreamWriter(System.out));
         } catch (Exception error) {
         }
     }
 
-    public void WriteArray(int[] array, String split) {
+    public static void WriteArray(int[] array, String split) {
         try {
             int length = array.length;
-            for (int index = 0; index < length; index++){
-                output.write(Integer.toString(array[index]));
-                if (index + 1 != length){
-                    output.write(split);
+            for (int index = 0; index < length; index++) {
+                write.write(Integer.toString(array[index]));
+                if (index + 1 != length) {
+                    write.write(split);
                 }
             }
-        }catch (Exception error){ }
+        } catch (Exception error) {
+        }
 
 
     }
 
-    public void WriteArray(long[] array, String split) {
+    public static void WriteArray(long[] array, String split) {
         try {
             int length = array.length;
-            for (int index = 0; index < length; index++){
-                output.write(Long.toString(array[index]));
-                if (index + 1 != length){
-                    output.write(split);
+            for (int index = 0; index < length; index++) {
+                write.write(Long.toString(array[index]));
+                if (index + 1 != length) {
+                    write.write(split);
                 }
             }
-        }catch (Exception error){ }
+        } catch (Exception error) {
+        }
     }
 
-    public void WriteArray(String[] array, String split) {
+    public static void WriteArray(String[] array, String split) {
         try {
             int length = array.length;
-            for (int index = 0; index < length; index++){
-                output.write(array[index]);
-                if (index + 1 != length){
-                    output.write(split);
+            for (int index = 0; index < length; index++) {
+                write.write(array[index]);
+                if (index + 1 != length) {
+                    write.write(split);
                 }
             }
-        }catch (Exception error){ }
+        } catch (Exception error) {
+        }
     }
 
-    public void WriteInt(int number, String split) {
+    public static void WriteArray(boolean[] array, String split) {
         try {
-            output.write(Integer.toString(number));
-            output.write(split);
+            int length = array.length;
+            for (int index = 0; index < length; index++) {
+                write.write(Boolean.toString(array[index]));
+                if (index + 1 != length) {
+                    write.write(split);
+                }
+            }
         } catch (Exception error) {
         }
     }
-    public void WriteString(String number, String split) {
+
+    public static void WriteInt(int number, String split) {
         try {
-            output.write(number);
-            output.write(split);
+            write.write(Integer.toString(number));
+            write.write(split);
         } catch (Exception error) {
         }
     }
-    public void WriteLong(Long number, String split) {
+
+    public static void WriteString(String word, String split) {
         try {
-            output.write(Long.toString(number));
-            output.write(split);
+            write.write(word);
+            write.write(split);
         } catch (Exception error) {
         }
     }
-}
+
+    public static void WriteLong(Long number, String split) {
+        try {
+            write.write(Long.toString(number));
+            write.write(split);
+        } catch (Exception error) {
+        }
+    }
