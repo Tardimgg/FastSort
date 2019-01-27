@@ -1,3 +1,22 @@
+//package CodeforcesProject;
+
+
+import java.io.*;
+import java.lang.*;
+import java.util.*;
+
+public class Main {
+
+    public static Input input;
+    public static Output output;
+
+    public static void main(String[] args) throws Exception {
+        input = new Input();
+        output = new Output();
+    }
+
+}
+
 class method {
 
     public static int gcd(int a, int b) { // NOD
@@ -23,9 +42,9 @@ class method {
     }
 
     public static void exit() throws Exception {
-        Output.write.flush();
-        Input.read.close();
-        Output.write.close();
+        Main.output.write.flush();
+        Main.input.read.close();
+        Main.output.write.close();
     }
 }
 
@@ -41,6 +60,49 @@ class graph {
         pred = new Integer[length];
     }
 
+    public static void RibMatrixToDefault(int length) throws Exception {
+        start(length);
+        base = new int[length][];
+        int FirstSize;
+        int SecondSize;
+        int[] rib;
+        int[] FirstArray;
+        int[] SecondArray;
+        int[] NewFirstArray;
+        int[] NewSecondArray;
+        for (int i = 0; i < length; i++) {
+            rib = Arrays.stream(Main.input.ReadArrayInt(" ")).map(element -> element - 1).toArray();
+            FirstArray = base[rib[0]];
+            SecondArray = base[rib[1]];
+            if (FirstArray == null) {
+                FirstSize = 0;
+            } else {
+                FirstSize = FirstArray.length;
+            }
+            if (SecondArray == null) {
+                SecondSize = 0;
+            } else {
+                SecondSize = SecondArray.length;
+            }
+            NewFirstArray = new int[FirstSize + 2];
+            NewSecondArray = new int[SecondSize + 2];
+            for (int index = 0; index < Math.max(FirstSize, SecondSize); index++) {
+                if (index < FirstSize) {
+                    NewFirstArray[index] = FirstArray[index];
+                }
+                if (index < SecondSize) {
+                    NewSecondArray[index] = SecondArray[index];
+                }
+            }
+            NewFirstArray[FirstSize] = rib[1];
+            NewSecondArray[SecondSize] = rib[0];
+            NewFirstArray[FirstSize + 1] = 1;
+            NewSecondArray[SecondSize + 1] = 1;
+            base[rib[0]] = NewFirstArray;
+            base[rib[1]] = NewSecondArray;
+        }
+    }
+
     public static void AdjacencyMatrixToDefault(int length, int dont) throws Exception {
         start(length);
         base = new int[length][];
@@ -48,18 +110,14 @@ class graph {
         int[] InputArray;
         int size;
         for (int i = 0; i < length; i++) {
-            InputArray = Input.ReadArrayInt(" ");
+            InputArray = Main.input.ReadArrayInt(" ");
             for (int index = 0; index < length; index++) {
                 if (i != index && InputArray[index] != dont) {
                     buffer.add(index);
                     buffer.add(InputArray[index]);
                 }
             }
-            size = buffer.size();
-            base[i] = new int[size];
-            for (int k = 0; k < size; k++) {
-                base[i][k] = buffer.get(k);
-            }
+            base[i] = buffer.stream().mapToInt(element -> element).toArray();
             buffer.clear();
         }
     }
@@ -357,7 +415,7 @@ class FastSort {
 
 class Input {
 
-    public static BufferedReader read;
+    public BufferedReader read;
     public static boolean FileInput = false;
 
     Input() {
@@ -367,34 +425,34 @@ class Input {
         }
     }
 
-    public static int ReadInt() throws Exception {
+    public int ReadInt() throws Exception {
         return Integer.parseInt(read.readLine());
     }
 
-    public static long ReadLong() throws Exception {
+    public long ReadLong() throws Exception {
         return Long.parseLong(read.readLine());
     }
 
-    public static String ReadString() throws Exception {
+    public String ReadString() throws Exception {
         return read.readLine();
     }
 
-    public static int[] ReadArrayInt(String split) throws Exception {
+    public int[] ReadArrayInt(String split) throws Exception {
         return Arrays.stream(read.readLine().split(split)).mapToInt(Integer::parseInt).toArray();
     }
 
-    public static long[] ReadArrayLong(String split) throws Exception {
+    public long[] ReadArrayLong(String split) throws Exception {
         return Arrays.stream(read.readLine().split(split)).mapToLong(Long::parseLong).toArray();
     }
 
-    public static String[] ReadArrayString(String split) throws Exception {
+    public String[] ReadArrayString(String split) throws Exception {
         return read.readLine().split(split);
     }
 }
 
 class Output {
 
-    public static BufferedWriter write;
+    public BufferedWriter write;
     public static boolean FileOutput = false;
 
     Output() {
@@ -404,7 +462,7 @@ class Output {
         }
     }
 
-    public static void WriteArray(int[] array, String split) {
+    public void WriteArray(int[] array, String split) {
         try {
             int length = array.length;
             for (int index = 0; index < length; index++) {
@@ -419,7 +477,7 @@ class Output {
 
     }
 
-    public static void WriteArray(long[] array, String split) {
+    public void WriteArray(long[] array, String split) {
         try {
             int length = array.length;
             for (int index = 0; index < length; index++) {
@@ -432,7 +490,7 @@ class Output {
         }
     }
 
-    public static void WriteArray(String[] array, String split) {
+    public void WriteArray(String[] array, String split) {
         try {
             int length = array.length;
             for (int index = 0; index < length; index++) {
@@ -445,7 +503,7 @@ class Output {
         }
     }
 
-    public static void WriteArray(boolean[] array, String split) {
+    public void WriteArray(boolean[] array, String split) {
         try {
             int length = array.length;
             for (int index = 0; index < length; index++) {
@@ -458,7 +516,7 @@ class Output {
         }
     }
 
-    public static void WriteInt(int number, String split) {
+    public void WriteInt(int number, String split) {
         try {
             write.write(Integer.toString(number));
             write.write(split);
@@ -466,7 +524,7 @@ class Output {
         }
     }
 
-    public static void WriteString(String word, String split) {
+    public void WriteString(String word, String split) {
         try {
             write.write(word);
             write.write(split);
@@ -474,7 +532,7 @@ class Output {
         }
     }
 
-    public static void WriteLong(Long number, String split) {
+    public void WriteLong(Long number, String split) {
         try {
             write.write(Long.toString(number));
             write.write(split);
