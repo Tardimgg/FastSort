@@ -1,77 +1,207 @@
-//package CodeforcesProject;
-
+package com.company;
 
 import java.io.*;
 import java.lang.*;
 import java.util.*;
 
-public class Main {
-
-    public static Input input;
-    public static Output output;
+public class Main extends InputAndOutput{
 
     public static void main(String[] args) throws Exception {
-        input = new Input();
-        output = new Output();
+        
     }
-
 }
 
 class method {
 
-    public static int gcd(int a, int b) { // NOD
+    protected static int gcd(int a, int b) { // NOD
         if (b == 0) {
             return a;
+        }
+
+        return gcd(b, a % b);
+    }
+
+    protected static long gcd(long a, long b) {
+        if (b == 0) {
+            return a;
+
         }
         return gcd(b, a % b);
     }
 
-    public static long gcd(long a, long b) {
+    protected static float gcd(float a, float b) {
         if (b == 0) {
             return a;
+
         }
         return gcd(b, a % b);
     }
 
-    public static int lcm(int a, int b) { // NOK
+    protected static double gcd(double a, double b) {
+        if (b == 0) {
+            return a;
+
+        }
+        return gcd(b, a % b);
+    }
+
+    protected static double lcm(double a, double b) { // NOK
         return a / gcd(a, b) * b;
     }
 
-    public static long lcm(long a, long b) {
+    protected static float lcm(float a, float b) { // NOK
         return a / gcd(a, b) * b;
     }
 
-    public static void exit() throws Exception {
-        Main.output.write.flush();
-        Main.input.read.close();
-        Main.output.write.close();
+    protected static int lcm(int a, int b) { // NOK
+        return a / gcd(a, b) * b;
+    }
+
+    protected static long lcm(long a, long b) {
+        return a / gcd(a, b) * b;
+    }
+
+    protected static void exit() throws Exception {
+        if (InputAndOutput.write == null){
+            return;
+        }
+        InputAndOutput.write.flush();
+        InputAndOutput.read.close();
+        InputAndOutput.write.close();
     }
 }
 
-class graph {
+class Division<T> extends Pair {
+
+    private Division(T dividend, T divider) {
+        super(dividend, divider);
+    }
+
+    protected static <K> Division<K> createDivision(K dividend, K divider) {
+        return new Division<K>(dividend, divider);
+    }
+
+    protected void reduce() {
+        if (getFirstElement() instanceof Integer) {
+            Integer Dividend = (Integer) getFirstElement();
+            Integer Divider = (Integer) getSecondElement();
+            int gcd = method.gcd(Dividend, Divider);
+            setFirst(Dividend / gcd);
+            setSecond(Divider / gcd);
+        } else if (getFirstElement() instanceof Long) {
+            Long Dividend = (Long) getFirstElement();
+            Long Divider = (Long) getSecondElement();
+            long gcd = method.gcd(Dividend, Divider);
+            setFirst(Dividend / gcd);
+            setSecond(Divider / gcd);
+        } else if (getFirstElement() instanceof Float) {
+            Float Dividend = (Float) getFirstElement();
+            Float Divider = (Float) getSecondElement();
+            float gcd = method.gcd(Dividend, Divider);
+            setFirst(Dividend / gcd);
+            setSecond(Divider / gcd);
+        } else if (getFirstElement() instanceof Double){
+            Double Dividend = (Double) getFirstElement();
+            Double Divider = (Double) getSecondElement();
+            double gcd = method.gcd(Dividend, Divider);
+            setFirst(Dividend / gcd);
+            setSecond(Divider / gcd);
+        }
+
+    }
+
+    protected void addWithoutReturn(Division number) throws UnsupportedOperationException{
+        if (getFirstElement() instanceof Integer && getSecondElement() instanceof Integer && number.getFirstElement() instanceof Integer && number.getSecondElement() instanceof Integer) {
+            Integer Dividend = (Integer) getFirstElement();
+            Integer Divider = (Integer) getSecondElement();
+            Integer Dividend1 = (Integer) number.getFirstElement();
+            Integer Divider1 = (Integer) number.getSecondElement();
+            Integer lcm = method.lcm(Divider, Divider1);
+            setFirst((lcm / Divider) * Dividend + (lcm / Divider1) * Dividend1);
+            setSecond(lcm);
+            reduce();
+        } else if (getFirstElement() instanceof Long && getSecondElement() instanceof Long && number.getFirstElement() instanceof Long && number.getSecondElement() instanceof Long) {
+            Long Dividend = (Long) getFirstElement();
+            Long Divider = (Long) getSecondElement();
+            Long Dividend1 = (Long) number.getFirstElement();
+            Long Divider1 = (Long) number.getSecondElement();
+            Long lcm = method.lcm(Divider, Divider1);
+            setFirst((lcm / Divider) * Dividend + (lcm / Divider1) * Dividend1);
+            setSecond(lcm);
+            reduce();
+        } else if (getFirstElement() instanceof Float && getSecondElement() instanceof Float && number.getFirstElement() instanceof Float && number.getSecondElement() instanceof Float) {
+            Float Dividend = (Float) getFirstElement();
+            Float Divider = (Float) getSecondElement();
+            Float Dividend1 = (Float) number.getFirstElement();
+            Float Divider1 = (Float) number.getSecondElement();
+            Float lcm = method.lcm(Divider, Divider1);
+            setFirst((lcm / Divider) * Dividend + (lcm / Divider1) * Dividend1);
+            setSecond(lcm);
+        } else if (getFirstElement() instanceof Double && getSecondElement() instanceof Double && number.getFirstElement() instanceof Double && number.getSecondElement() instanceof Double){
+            Double Dividend = (Double) getFirstElement();
+            Double Divider = (Double) getSecondElement();
+            Double Dividend1 = (Double) number.getFirstElement();
+            Double Divider1 = (Double) number.getSecondElement();
+            Double lcm = method.lcm(Divider, Divider1);
+            setFirst((lcm / Divider) * Dividend + (lcm / Divider1) * Dividend1);
+            setSecond(lcm);
+        }else{
+            throw new UnsupportedOperationException();
+        }
+    }
+}
+
+class Pair<T, T1> {
+
+    private T first;
+    private T1 second;
+
+    Pair(T obj, T1 obj1) {
+        first = obj;
+        second = obj1;
+    }
+
+    protected static <K, V> Pair<K, V> createPair(K element, V element1) {
+        return new Pair<>(element, element1);
+    }
+
+    protected T getFirstElement() {
+        return first;
+    }
+
+    protected T1 getSecondElement() {
+        return second;
+    }
+
+    protected void setFirst(T element) {
+        first = element;
+    }
+
+    protected void setSecond(T1 element) {
+        second = element;
+    }
+
+}
+
+class graph{
 
     private static int[][] base;
     private static boolean[] used;
-    public static int quantity = 0;
+    protected static int quantity = 0;
     private static Integer[] pred;
 
-    public static void start(int length) {
+    protected static void start(int length) {
         used = new boolean[length];
         pred = new Integer[length];
     }
 
-    public static void RibMatrixToDefault(int length) throws Exception {
+    protected static void RibMatrixToDefault(int length) throws Exception {
         start(length);
         base = new int[length][];
-        int FirstSize;
-        int SecondSize;
-        int[] rib;
-        int[] FirstArray;
-        int[] SecondArray;
-        int[] NewFirstArray;
-        int[] NewSecondArray;
+        int FirstSize, SecondSize;
+        int[] rib, FirstArray, SecondArray, NewFirstArray, NewSecondArray;
         for (int i = 0; i < length; i++) {
-            rib = Arrays.stream(Main.input.ReadArrayInt(" ")).map(element -> element - 1).toArray();
+            rib = Arrays.stream(InputAndOutput.ReadArrayInt(" ")).map(element -> element - 1).toArray();
             FirstArray = base[rib[0]];
             SecondArray = base[rib[1]];
             if (FirstArray == null) {
@@ -103,14 +233,13 @@ class graph {
         }
     }
 
-    public static void AdjacencyMatrixToDefault(int length, int dont) throws Exception {
+    protected static void AdjacencyMatrixToDefault(int length, int dont) throws Exception {
         start(length);
         base = new int[length][];
         List<Integer> buffer = new ArrayList<>();
         int[] InputArray;
-        int size;
         for (int i = 0; i < length; i++) {
-            InputArray = Main.input.ReadArrayInt(" ");
+            InputArray = InputAndOutput.ReadArrayInt(" ");
             for (int index = 0; index < length; index++) {
                 if (i != index && InputArray[index] != dont) {
                     buffer.add(index);
@@ -122,7 +251,7 @@ class graph {
         }
     }
 
-    public static void dfs(int position) throws Exception {
+    protected static void dfs(int position) throws Exception {
         used[position] = true;
         quantity++;
         int next;
@@ -139,7 +268,7 @@ class graph {
         }
     }
 
-    public static int dijkstra(int start, int stop, int size) {
+    protected static int dijkstra(int start, int stop, int size) {
         start--;
         stop--;
         int[] dist = new int[size];
@@ -171,7 +300,7 @@ class graph {
         return dist[stop] == Integer.MAX_VALUE ? -1 : dist[stop];
     }
 
-    public static boolean FloydWarshall(int[][] base, int length, int dont) {
+    protected static boolean FloydWarshall(int[][] base, int length, int dont) {
         for (int k = 0; k < length; k++) {
             for (int i = 0; i < length; i++) {
                 for (int j = 0; j < length; j++) {
@@ -199,18 +328,19 @@ class graph {
 
 class FastSort {
 
-    public static void SortWithoutReturn(int[] array, int ShellHeapMergeMyInsertionSort, int length) {
+
+    protected static void SortWithoutReturn(int[] array, int length, int ShellHeapMergeMyInsertionSort) {
         sort(array, ShellHeapMergeMyInsertionSort, length);
     }
 
-    public static int[] SortWithReturn(int[] array, int ShellHeapMergeMyInsertionSort, int length) {
+    protected static int[] SortWithReturn(int[] array, int length, int ShellHeapMergeMyInsertionSort) {
         sort(array, ShellHeapMergeMyInsertionSort, length);
         return array;
     }
 
     private static void sort(int[] array, int ShellHeapMergeMyInsertionSort, int length) {
-        Random random = new Random();
         if (ShellHeapMergeMyInsertionSort < 0 || ShellHeapMergeMyInsertionSort > 4) {
+            Random random = new Random();
             ShellHeapMergeMyInsertionSort = random.nextInt(4);
         }
         if (ShellHeapMergeMyInsertionSort == 0) {
@@ -249,12 +379,7 @@ class FastSort {
             }
         }
         boolean position = false;
-        int pointer0;
-        int pointer;
-        int pointer1;
-        int number = 4;
-        int NewPointer;
-        int count;
+        int pointer0, pointer, pointer1, number = 4, NewPointer, count;
         Integer[][] NewBuffer;
         Integer[][] OldBuffer;
         length = (size / 4) + ((size % 4) == 0 ? 0 : 1);
@@ -319,13 +444,12 @@ class FastSort {
                 pointer0 += 2;
             }
             position = !position;
-            length = length / 2 + (length % 2 == 0 ? 0 : 1);
+            length = length / 2 + length % 2;
             number *= 2;
-
         }
     }
 
-    public static void ShellSort(int[] array) {
+    private static void ShellSort(int[] array) {
         int j;
         for (int gap = array.length / 2; gap > 0; gap /= 2) {
             for (int i = gap; i < array.length; i++) {
@@ -413,56 +537,73 @@ class FastSort {
     }
 }
 
-class Input {
+class InputAndOutput{
 
-    public BufferedReader read;
-    public static boolean FileInput = false;
+    protected static BufferedReader read;
+    protected static boolean FileInput = false;
+    protected static BufferedWriter write;
+    protected static boolean FileOutput = false;
 
-    Input() {
+    private static void startInput(){
         try {
             read = new BufferedReader(FileInput ? new FileReader("input.txt") : new InputStreamReader(System.in));
         } catch (Exception error) {
         }
     }
 
-    public int ReadInt() throws Exception {
-        return Integer.parseInt(read.readLine());
-    }
-
-    public long ReadLong() throws Exception {
-        return Long.parseLong(read.readLine());
-    }
-
-    public String ReadString() throws Exception {
-        return read.readLine();
-    }
-
-    public int[] ReadArrayInt(String split) throws Exception {
-        return Arrays.stream(read.readLine().split(split)).mapToInt(Integer::parseInt).toArray();
-    }
-
-    public long[] ReadArrayLong(String split) throws Exception {
-        return Arrays.stream(read.readLine().split(split)).mapToLong(Long::parseLong).toArray();
-    }
-
-    public String[] ReadArrayString(String split) throws Exception {
-        return read.readLine().split(split);
-    }
-}
-
-class Output {
-
-    public BufferedWriter write;
-    public static boolean FileOutput = false;
-
-    Output() {
+    private static void startOutput(){
         try {
             write = new BufferedWriter(FileOutput ? new FileWriter("output.txt") : new OutputStreamWriter(System.out));
         } catch (Exception error) {
         }
     }
 
-    public void WriteArray(int[] array, String split) {
+    protected static int ReadInt() throws Exception {
+        if (read == null) {
+            startInput();
+        }
+        return Integer.parseInt(read.readLine());
+    }
+
+    protected static long ReadLong() throws Exception {
+        if (read == null) {
+            startInput();
+        }
+        return Long.parseLong(read.readLine());
+    }
+
+    protected static String ReadString() throws Exception {
+        if (read == null) {
+            startInput();
+        }
+        return read.readLine();
+    }
+
+    protected static int[] ReadArrayInt(String split) throws Exception {
+        if (read == null) {
+            startInput();
+        }
+        return Arrays.stream(read.readLine().split(split)).mapToInt(Integer::parseInt).toArray();
+    }
+
+    protected static long[] ReadArrayLong(String split) throws Exception {
+        if (read == null) {
+            startInput();
+        }
+        return Arrays.stream(read.readLine().split(split)).mapToLong(Long::parseLong).toArray();
+    }
+
+    protected static String[] ReadArrayString(String split) throws Exception {
+        if (read == null) {
+            startInput();
+        }
+        return read.readLine().split(split);
+    }
+
+    protected static void WriteArray(int[] array, String split) {
+        if (write == null){
+            startOutput();
+        }
         try {
             int length = array.length;
             for (int index = 0; index < length; index++) {
@@ -473,11 +614,12 @@ class Output {
             }
         } catch (Exception error) {
         }
-
-
     }
 
-    public void WriteArray(long[] array, String split) {
+    protected static void WriteArray(long[] array, String split) {
+        if (write == null){
+            startOutput();
+        }
         try {
             int length = array.length;
             for (int index = 0; index < length; index++) {
@@ -490,7 +632,10 @@ class Output {
         }
     }
 
-    public void WriteArray(String[] array, String split) {
+    public static void WriteArray(String[] array, String split) {
+        if (write == null){
+            startOutput();
+        }
         try {
             int length = array.length;
             for (int index = 0; index < length; index++) {
@@ -503,7 +648,10 @@ class Output {
         }
     }
 
-    public void WriteArray(boolean[] array, String split) {
+    protected static void WriteArray(boolean[] array, String split) {
+        if (write == null){
+            startOutput();
+        }
         try {
             int length = array.length;
             for (int index = 0; index < length; index++) {
@@ -516,7 +664,10 @@ class Output {
         }
     }
 
-    public void WriteInt(int number, String split) {
+    protected static void WriteInt(int number, String split) {
+        if (write == null){
+            startOutput();
+        }
         try {
             write.write(Integer.toString(number));
             write.write(split);
@@ -524,7 +675,10 @@ class Output {
         }
     }
 
-    public void WriteString(String word, String split) {
+    protected static void WriteString(String word, String split) {
+        if (write == null){
+            startOutput();
+        }
         try {
             write.write(word);
             write.write(split);
@@ -532,10 +686,24 @@ class Output {
         }
     }
 
-    public void WriteLong(Long number, String split) {
+    protected static void WriteLong(Long number, String split) {
+        if (write == null){
+            startOutput();
+        }
         try {
             write.write(Long.toString(number));
             write.write(split);
         } catch (Exception error) {
         }
     }
+
+    protected static void WriteEnter() {
+        if (write == null){
+            startOutput();
+        }
+        try {
+            write.newLine();
+        } catch (Exception e) {
+        }
+    }
+}
