@@ -2,26 +2,25 @@ import java.io.*;
 import java.lang.*;
 import java.util.*;
 
-public class Main extends InputAndOutput {
+public class Main extends IO {
 
     public static void main(String[] args) throws Exception {
     }
+
 }
 
-class method {
+class math {
 
     protected static int gcd(int a, int b) { // NOD
         if (b == 0) {
             return a;
         }
-
         return gcd(b, a % b);
     }
 
     protected static long gcd(long a, long b) {
         if (b == 0) {
             return a;
-
         }
         return gcd(b, a % b);
     }
@@ -29,7 +28,6 @@ class method {
     protected static float gcd(float a, float b) {
         if (b == 0) {
             return a;
-
         }
         return gcd(b, a % b);
     }
@@ -37,7 +35,6 @@ class method {
     protected static double gcd(double a, double b) {
         if (b == 0) {
             return a;
-
         }
         return gcd(b, a % b);
     }
@@ -56,17 +53,18 @@ class method {
 
     protected static long lcm(long a, long b) {
         return a / gcd(a, b) * b;
+
     }
 }
 
-class Division<T> extends Pair {
+class Division <T extends Number> extends Pair {
 
     private Division(T dividend, T divider) {
         super(dividend, divider);
         reduce();
     }
 
-    protected static <K> Division<K> createDivision(K dividend, K divider) {
+    protected static <K extends Number> Division<K> createDivision(K dividend, K divider) {
         return new Division<>(dividend, divider);
     }
 
@@ -74,25 +72,25 @@ class Division<T> extends Pair {
         if (getFirstElement() instanceof Integer) {
             Integer Dividend = (Integer) getFirstElement();
             Integer Divider = (Integer) getSecondElement();
-            int gcd = method.gcd(Dividend, Divider);
+            int gcd = math.gcd(Dividend, Divider);
             setFirst(Dividend / gcd);
             setSecond(Divider / gcd);
         } else if (getFirstElement() instanceof Long) {
             Long Dividend = (Long) getFirstElement();
             Long Divider = (Long) getSecondElement();
-            long gcd = method.gcd(Dividend, Divider);
+            long gcd = math.gcd(Dividend, Divider);
             setFirst(Dividend / gcd);
             setSecond(Divider / gcd);
         } else if (getFirstElement() instanceof Float) {
             Float Dividend = (Float) getFirstElement();
             Float Divider = (Float) getSecondElement();
-            float gcd = method.gcd(Dividend, Divider);
+            float gcd = math.gcd(Dividend, Divider);
             setFirst(Dividend / gcd);
             setSecond(Divider / gcd);
         } else if (getFirstElement() instanceof Double) {
             Double Dividend = (Double) getFirstElement();
             Double Divider = (Double) getSecondElement();
-            double gcd = method.gcd(Dividend, Divider);
+            double gcd = math.gcd(Dividend, Divider);
             setFirst(Dividend / gcd);
             setSecond(Divider / gcd);
         }
@@ -102,13 +100,13 @@ class Division<T> extends Pair {
         add(number, 0);
     }
 
-    private Division<T> add(Division number, int function) throws UnsupportedOperationException {
+    private Division add(Division number, int function) throws UnsupportedOperationException {
         if (getFirstElement() instanceof Integer && number.getFirstElement() instanceof Integer) {
             Integer Dividend = (Integer) getFirstElement();
             Integer Divider = (Integer) getSecondElement();
             Integer Dividend1 = (Integer) number.getFirstElement();
             Integer Divider1 = (Integer) number.getSecondElement();
-            Integer lcm = method.lcm(Divider, Divider1);
+            Integer lcm = math.lcm(Divider, Divider1);
             if (function == 0) {
                 setFirst((lcm / Divider) * Dividend + (lcm / Divider1) * Dividend1);
                 setSecond(lcm);
@@ -124,7 +122,7 @@ class Division<T> extends Pair {
             Long Divider = (Long) getSecondElement();
             Long Dividend1 = (Long) number.getFirstElement();
             Long Divider1 = (Long) number.getSecondElement();
-            Long lcm = method.lcm(Divider, Divider1);
+            Long lcm = math.lcm(Divider, Divider1);
             if (function == 0) {
                 setFirst((lcm / Divider) * Dividend + (lcm / Divider1) * Dividend1);
                 setSecond(lcm);
@@ -139,7 +137,7 @@ class Division<T> extends Pair {
             Float Divider = (Float) getSecondElement();
             Float Dividend1 = (Float) number.getFirstElement();
             Float Divider1 = (Float) number.getSecondElement();
-            Float lcm = method.lcm(Divider, Divider1);
+            Float lcm = math.lcm(Divider, Divider1);
             if (function == 0) {
                 setFirst((lcm / Divider) * Dividend + (lcm / Divider1) * Dividend1);
                 setSecond(lcm);
@@ -154,7 +152,7 @@ class Division<T> extends Pair {
             Double Divider = (Double) getSecondElement();
             Double Dividend1 = (Double) number.getFirstElement();
             Double Divider1 = (Double) number.getSecondElement();
-            Double lcm = method.lcm(Divider, Divider1);
+            Double lcm = math.lcm(Divider, Divider1);
             if (function == 0) {
                 setFirst((lcm / Divider) * Dividend + (lcm / Divider1) * Dividend1);
                 setSecond(lcm);
@@ -169,7 +167,7 @@ class Division<T> extends Pair {
         }
     }
 
-    protected Division<T> addWithReturn(Division number) {
+    protected Division addWithReturn(Division number) {
         return add(number, 1);
     }
 
@@ -177,11 +175,11 @@ class Division<T> extends Pair {
         multiply(number, 0);
     }
 
-    protected Division<T> multiplyWithReturn(Division number) throws UnsupportedOperationException {
+    protected Division multiplyWithReturn(Division number) throws UnsupportedOperationException {
         return multiply(number, 1);
     }
 
-    private Division<T> multiply(Division number, int function) throws UnsupportedOperationException {
+    private Division multiply(Division number, int function) throws UnsupportedOperationException {
         if (getFirstElement() instanceof Integer && number.getFirstElement() instanceof Integer) {
             Integer first = (Integer) getFirstElement() * (Integer) number.getFirstElement();
             Integer second = (Integer) getSecondElement() * (Integer) number.getSecondElement();
@@ -271,7 +269,7 @@ class Pair<T, T1> {
 
 class Graph {
 
-    public int[][] base;
+    private int[][] base;
     private boolean[] used;
     protected int quantity;
     private Integer[] pred;
@@ -296,7 +294,7 @@ class Graph {
             inputBase.get(input[1] - 1).add(1);
         };
         for (int i = 0; i < quantity; i++) {
-            x.useArray(InputAndOutput.ReadArrayInt(" "));
+            x.useArray(IO.ReadArrayInt(" "));
         }
         for (int i = 0; i < length; i++) {
             base[i] = inputBase.get(i).parallelStream().mapToInt(Integer::intValue).toArray();
@@ -309,7 +307,7 @@ class Graph {
         List<Integer> buffer = new ArrayList<>();
         int[] InputArray;
         for (int i = 0; i < length; i++) {
-            InputArray = InputAndOutput.ReadArrayInt(" ");
+            InputArray = IO.ReadArrayInt(" ");
             for (int index = 0; index < length; index++) {
                 if (i != index && InputArray[index] != dont) {
                     buffer.add(index);
@@ -322,7 +320,7 @@ class Graph {
         start(length);
     }
 
-    protected void dfs(int position, boolean defend) throws Exception {
+    protected void dfs(int position) throws Exception {
         used[position] = true;
         quantity++;
         int next;
@@ -330,7 +328,7 @@ class Graph {
             next = base[position][index];
             if (!used[next]) {
                 pred[next] = position;
-                dfs(next, !defend);
+                dfs(next);
             } else {
                 if (next != pred[position]) { // if cycle
                     throw new Exception();
@@ -400,6 +398,11 @@ class Graph {
 interface Array {
     void useArray(int[] a);
 }
+
+interface Method{
+    void use();
+}
+
 
 class FastSort {
 
@@ -613,7 +616,7 @@ class FastSort {
     }
 }
 
-class InputAndOutput {
+class IO {
 
     protected static BufferedReader read;
     protected static boolean FileInput = false;
