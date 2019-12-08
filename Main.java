@@ -1,3 +1,4 @@
+
 import java.io.*;
 import java.lang.*;
 import java.util.*;
@@ -5,7 +6,7 @@ import java.util.*;
 public class Main extends IO {
 
     public static void main(String[] args) throws Exception {
-
+        
     }
 }
 
@@ -85,7 +86,7 @@ class Fraction<T extends Number> extends Pair {
         reduce();
     }
 
-    protected static <T extends Number> Fraction<T> createDivision(T dividend, T divider) {
+    protected static <T extends Number> Fraction<T> createFraction(T dividend, T divider) {
         return new Fraction<>(dividend, divider);
     }
 
@@ -134,7 +135,7 @@ class Fraction<T extends Number> extends Pair {
                 reduce();
                 return null;
             }
-            Fraction result = Fraction.createDivision((lcm / Divider) * Dividend + (lcm / Divider1) * Dividend1, lcm);
+            Fraction result = Fraction.createFraction((lcm / Divider) * Dividend + (lcm / Divider1) * Dividend1, lcm);
             result.reduce();
             return result;
 
@@ -150,7 +151,7 @@ class Fraction<T extends Number> extends Pair {
                 reduce();
                 return null;
             }
-            Fraction result = Fraction.createDivision((lcm / Divider) * Dividend + (lcm / Divider1) * Dividend1, lcm);
+            Fraction result = Fraction.createFraction((lcm / Divider) * Dividend + (lcm / Divider1) * Dividend1, lcm);
             result.reduce();
             return result;
         } else if (getFirstElement() instanceof Float && number.getFirstElement() instanceof Float) {
@@ -165,7 +166,7 @@ class Fraction<T extends Number> extends Pair {
                 reduce();
                 return null;
             }
-            Fraction result = Fraction.createDivision((lcm / Divider) * Dividend + (lcm / Divider1) * Dividend1, lcm);
+            Fraction result = Fraction.createFraction((lcm / Divider) * Dividend + (lcm / Divider1) * Dividend1, lcm);
             result.reduce();
             return result;
         } else if (getFirstElement() instanceof Double && number.getFirstElement() instanceof Double) {
@@ -180,7 +181,7 @@ class Fraction<T extends Number> extends Pair {
                 reduce();
                 return null;
             }
-            Fraction result = Fraction.createDivision((lcm / Divider) * Dividend + (lcm / Divider1) * Dividend1, lcm);
+            Fraction result = Fraction.createFraction((lcm / Divider) * Dividend + (lcm / Divider1) * Dividend1, lcm);
             result.reduce();
             return result;
         } else {
@@ -210,7 +211,7 @@ class Fraction<T extends Number> extends Pair {
                 reduce();
                 return null;
             }
-            Fraction answer = Fraction.createDivision(first, second);
+            Fraction answer = Fraction.createFraction(first, second);
             answer.reduce();
             return answer;
         } else if (getFirstElement() instanceof Long && number.getFirstElement() instanceof Long) {
@@ -222,7 +223,7 @@ class Fraction<T extends Number> extends Pair {
                 reduce();
                 return null;
             }
-            Fraction answer = Fraction.createDivision(first, second);
+            Fraction answer = Fraction.createFraction(first, second);
             answer.reduce();
             return answer;
 
@@ -235,7 +236,7 @@ class Fraction<T extends Number> extends Pair {
                 reduce();
                 return null;
             }
-            Fraction answer = Fraction.createDivision(first, second);
+            Fraction answer = Fraction.createFraction(first, second);
             answer.reduce();
             return answer;
         } else if (getFirstElement() instanceof Double && number.getFirstElement() instanceof Double) {
@@ -247,7 +248,7 @@ class Fraction<T extends Number> extends Pair {
                 reduce();
                 return null;
             }
-            Fraction answer = Fraction.createDivision(first, second);
+            Fraction answer = Fraction.createFraction(first, second);
             answer.reduce();
             return answer;
         } else {
@@ -324,6 +325,10 @@ class Graph {
 
     public Integer[] getAncestor() {
         return ancestor.clone();
+    }
+
+    public void setBase(int[][] base) {
+        this.base = base;
     }
 
     public void start(int length) {
