@@ -2,17 +2,19 @@
 import java.io.*;
 import java.lang.*;
 import java.util.*;
+import java.util.function.BiFunction;
 
 public class Main extends IO {
 
     public static void main(String[] args) throws Exception {
-        
+
     }
 }
 
+
 class math {
 
-    protected static int remains = 0x3B800001;
+    protected static int remains = 0x989687;
 
     protected static int gcd(int a, int b) { // NOD
         if (b == 0) {
@@ -77,6 +79,33 @@ class math {
         return 1;
     }
 
+}
+
+class Int implements Comparable<Integer> {
+
+    protected int value;
+
+    Int(int value) {
+        this.value = value;
+    }
+
+    @Override
+    public int compareTo(Integer o) {
+        return (this.value < o) ? -1 : ((this.value == o) ? 0 : 1);
+    }
+
+    @Override
+    public boolean equals(Object obj) {
+        if (obj instanceof Integer) {
+            return value == (Integer) obj;
+        }
+        return false;
+    }
+
+    @Override
+    public int hashCode() {
+        return value;
+    }
 }
 
 class Fraction<T extends Number> extends Pair {
@@ -257,7 +286,7 @@ class Fraction<T extends Number> extends Pair {
     }
 }
 
-class Pair<T, T1> {
+class Pair<T, T1> implements Cloneable {
 
     private T first;
     private T1 second;
@@ -302,6 +331,11 @@ class Pair<T, T1> {
         hashCode = 31 * hashCode + (first == null ? 0 : first.hashCode());
         return 31 * hashCode + (second == null ? 0 : second.hashCode());
     }
+
+    @Override
+    public Object clone() {
+        return Pair.createPair(first, second);
+    }
 }
 
 class Graph {
@@ -334,7 +368,7 @@ class Graph {
     public void start(int length) {
         used = new boolean[length];
         ancestor = new Integer[length];
-        ancestor[0] = -1;
+        Arrays.fill(ancestor, -1);
         quantity = 0;
     }
 
@@ -379,16 +413,16 @@ class Graph {
         used[position] = true;
         quantity++;
         int next;
-        for (int index = 0; index < base[position].length; index += 2) {
+        for (int index = 0; index < base[position].length; index++) {
             next = base[position][index];
             if (!used[next]) {
                 ancestor[next] = position;
                 dfs(next);
-            } else {
+            } /*else {
                 if (next != ancestor[position]) { // if cycle
                     throw new Exception();
                 }
-            }
+            }*/
         }
     }
 
@@ -448,6 +482,78 @@ class Graph {
         }
         return true;
     }
+
+    private static int[] answer;
+    private static BiFunction<Integer, Integer, Integer> function;
+
+    protected static int[] createSegmentTree(int[] startBase, int neutral, BiFunction<Integer, Integer, Integer> function) {
+        Graph.function = function;
+        int length = startBase.length;
+        int[] base;
+        if ((length & (length - 1)) != 0) {
+            int pow = 0;
+            while (length > 0) {
+                length >>= 1;
+                pow++;
+            }
+            pow--;
+            base = new int[2 << pow];
+            System.arraycopy(startBase, 0, base, 0, startBase.length);
+            Arrays.fill(base, startBase.length, base.length, neutral);
+
+        } else {
+            base = startBase;
+        }
+        answer = new int[base.length << 1]; // maybe * 4
+        Arrays.fill(answer, neutral);
+        inDepth(base, 1, 0, base.length - 1);
+        return answer;
+    }
+
+    private static void inDepth(int[] base, int position, int low, int high) {
+        if (low == high) {
+            answer[position] = base[low];
+        } else {
+            int mid = (low + high) >> 1;
+            inDepth(base, position << 1, low, mid);
+            inDepth(base, (position << 1) + 1, mid + 1, high);
+            answer[position] = function.apply(answer[position << 1], answer[(position << 1) + 1]);
+        }
+    }
+
+    protected static int getValue(int[] base, int left, int right, int neutral) {
+        return findValue(base, 1, 0, ((base.length) >> 1) - 1, left, right, neutral);
+    }
+
+    private static int findValue(int[] base, int position, int low, int high, int left, int right, int neutral) {
+        if (left > right) {
+            return neutral;
+        }
+        if (left == low && right == high) {
+            return base[position];
+        }
+        int mid = (low + high) >> 1;
+        return function.apply(findValue(base, position << 1, low, mid, left, Math.min(right, mid), neutral),
+                findValue(base, (position << 1) + 1, mid + 1, high, Math.max(left, mid + 1), right, neutral));
+    }
+
+    protected static void replaceValue(int[] base, int index, int value) {
+        update(base, 1, 0, (base.length >> 1) - 1, index, value);
+    }
+
+    private static void update(int[] base, int position, int low, int high, int index, int value) {
+        if (low == high) {
+            base[position] = value;
+        } else {
+            int mid = (low + high) >> 1;
+            if (index <= mid) {
+                update(base, position << 1, low, mid, index, value);
+            } else {
+                update(base, (position << 1) + 1, mid + 1, high, index, value);
+            }
+            base[position] = function.apply(base[position << 1], base[(position << 1) + 1]);
+        }
+    }
 }
 
 interface Array {
@@ -460,13 +566,14 @@ interface Method {
 
 class FastSort {
 
-    protected static void sortWithoutReturn(int[] array, int length, int ShellHeapMergeMyInsertionSort) {
-        sort(array, ShellHeapMergeMyInsertionSort, length);
+    protected static int[] sort(int[] array, int ShellHeapMergeMyInsertionSort) {
+        sort(array, ShellHeapMergeMyInsertionSort, array.length);
+        return array;
     }
 
-    protected static int[] sortWithReturn(int[] array, int length, int ShellHeapMergeMyInsertionSort) {
+    protected static int[] sortClone(int[] array, int ShellHeapMergeMyInsertionSort) {
         int[] base = array.clone();
-        sort(base, ShellHeapMergeMyInsertionSort, length);
+        sort(base, ShellHeapMergeMyInsertionSort, array.length);
         return base;
     }
 
@@ -492,12 +599,12 @@ class FastSort {
         if (size == 0) {
             return;
         }
-        int length = (size / 2) + ((size % 2) == 0 ? 0 : 1);
+        int length = (size >> 1) + ((size % 2) == 0 ? 0 : 1);
         Integer[][] ZeroBuffer = new Integer[length + length % 2][2];
         Integer[][] FirstBuffer = new Integer[0][0];
         for (int index = 0; index < length; index++) {
-            int ArrayIndex = index * 2;
-            int NextArrayIndex = index * 2 + 1;
+            int ArrayIndex = index << 1;
+            int NextArrayIndex = (index << 1) + 1;
             if (NextArrayIndex < size) {
                 if (array[ArrayIndex] > array[NextArrayIndex]) {
                     ZeroBuffer[index][0] = array[NextArrayIndex];
@@ -517,7 +624,7 @@ class FastSort {
         length = (size / 4) + ((size % 4) == 0 ? 0 : 1);
         while (true) {
             pointer0 = 0;
-            count = (number / 2) - 1;
+            count = (number >> 1) - 1;
             if (!position) {
                 FirstBuffer = new Integer[length + length % 2][number];
                 NewBuffer = FirstBuffer;
@@ -576,14 +683,14 @@ class FastSort {
                 pointer0 += 2;
             }
             position = !position;
-            length = length / 2 + length % 2;
-            number *= 2;
+            length = (length >> 1) + length % 2;
+            number <<= 1;
         }
     }
 
     private static void ShellSort(int[] array) {
         int j;
-        for (int gap = array.length / 2; gap > 0; gap /= 2) {
+        for (int gap = (array.length >> 1); gap > 0; gap >>= 1) {
             for (int i = gap; i < array.length; i++) {
                 int temp = array[i];
                 for (j = i; j >= gap && array[j - gap] > temp; j -= gap) {
@@ -595,7 +702,7 @@ class FastSort {
     }
 
     private static void HeapSort(int[] array) {
-        for (int i = array.length / 2 - 1; i >= 0; i--)
+        for (int i = (array.length >> 1) - 1; i >= 0; i--)
             shiftDown(array, i, array.length);
         for (int i = array.length - 1; i > 0; i--) {
             swap(array, 0, i);
@@ -619,7 +726,7 @@ class FastSort {
     }
 
     private static int leftChild(int i) {
-        return 2 * i + 1;
+        return (i << 1) + 1;
     }
 
     private static void swap(int[] array, int i, int j) {
@@ -630,7 +737,7 @@ class FastSort {
 
     private static void MergeSort(int[] array, int low, int high) {
         if (low < high) {
-            int mid = (low + high) / 2;
+            int mid = (low + high) >> 1;
             MergeSort(array, low, mid);
             MergeSort(array, mid + 1, high);
             merge(array, low, mid, high);
@@ -767,6 +874,25 @@ class IO {
             int length = array.length;
             for (int index = 0; index < length; index++) {
                 write.write(Integer.toString(array[index]));
+                if (index + 1 != length) {
+                    write.write(split);
+                }
+            }
+            if (enter) {
+                writeEnter();
+            }
+        } catch (Exception error) {
+        }
+    }
+
+    protected static void writeArray(Int[] array, String split, boolean enter) {
+        if (write == null) {
+            startOutput();
+        }
+        try {
+            int length = array.length;
+            for (int index = 0; index < length; index++) {
+                write.write(Integer.toString(array[index].value));
                 if (index + 1 != length) {
                     write.write(split);
                 }
@@ -977,7 +1103,9 @@ class IO {
             return;
         }
         write.flush();
-        read.close();
+        if (read != null) {
+            read.close();
+        }
         write.close();
     }
 }
