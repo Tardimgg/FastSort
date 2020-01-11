@@ -106,6 +106,11 @@ class Int implements Comparable<Integer> {
     public int hashCode() {
         return value;
     }
+
+    @Override
+    protected void finalize() throws Throwable {
+        super.finalize();
+    }
 }
 
 class Fraction<T extends Number> extends Pair {
@@ -365,14 +370,15 @@ class Graph {
         this.base = base;
     }
 
-    public void start(int length) {
+    protected void start(int length) {
         used = new boolean[length];
         ancestor = new Integer[length];
         Arrays.fill(ancestor, -1);
         quantity = 0;
     }
 
-    public void ribMatrixToDefault(int length, int quantity, boolean readConsole, int[][] value) throws Exception {
+
+    protected void edgesMatrixToDefault(int length, int quantity, boolean readConsole, int[][] value) throws Exception {
         base = new int[length][];
         List<ArrayList<Integer>> inputBase = new ArrayList<>();
         for (int i = 0; i < length; i++) {
@@ -391,25 +397,24 @@ class Graph {
         start(length);
     }
 
-    public void adjacencyMatrixToDefault(int length, int not, boolean readConsole, int[][] value) throws Exception {
-        base = new int[length][];
+    protected void adjacencyMatrixToDefault(int length, int not, boolean readConsole, int[][] value) throws Exception {
+        this.base = new int[length][];
         List<Integer> buffer = new ArrayList<>();
-        int[] InputArray;
         for (int i = 0; i < length; i++) {
-            InputArray = readConsole ? IO.readArrayInt(" ") : value[i];
+            int[] InputArray = readConsole ? IO.readArrayInt(" ") : value[i];
             for (int index = 0; index < length; index++) {
                 if (i != index && InputArray[index] != not) {
                     buffer.add(index);
                     // buffer.add(InputArray[index]); // price
                 }
             }
-            base[i] = buffer.stream().mapToInt(Integer::intValue).toArray();
+            this.base[i] = buffer.stream().mapToInt(Integer::intValue).toArray();
             buffer.clear();
         }
         start(length);
     }
 
-    public void dfs(int position) throws Exception {
+    protected void dfs(int position) throws Exception {
         used[position] = true;
         quantity++;
         int next;
@@ -426,7 +431,7 @@ class Graph {
         }
     }
 
-    public int dijkstra(int start, int stop, int size) {
+    protected int dijkstra(int start, int stop, int size) {
         start--;
         stop--;
         int[] dist = new int[size];
@@ -447,11 +452,11 @@ class Graph {
             if (getQueue[1] > dist[position]) {
                 continue;
             }
-            for (int index = 0; index < base[position].length; index += 2) {
-                if (dist[position] + base[position][index + 1] < dist[base[position][index]] && !used[base[position][index]]) {
-                    dist[base[position][index]] = dist[position] + base[position][index + 1];
-                    ancestor[base[position][index]] = position;
-                    queue.add(new int[]{base[position][index], dist[base[position][index]]});
+            for (int index = 0; index < this.base[position].length; index += 2) {
+                if (dist[position] + this.base[position][index + 1] < dist[this.base[position][index]] && !this.used[this.base[position][index]]) {
+                    dist[this.base[position][index]] = dist[position] + this.base[position][index + 1];
+                    this.ancestor[this.base[position][index]] = position;
+                    queue.add(new int[]{this.base[position][index], dist[this.base[position][index]]});
                 }
             }
             used[position] = true;
@@ -459,7 +464,7 @@ class Graph {
         return dist[stop] == Integer.MAX_VALUE ? -1 : dist[stop];
     }
 
-    public static boolean floydWarshall(int[][] base, int length, int not) {
+    protected static boolean solveFloydWarshall(int[][] base, int length, int not) {
         for (int k = 0; k < length; k++) {
             for (int i = 0; i < length; i++) {
                 for (int j = 0; j < length; j++) {
@@ -483,76 +488,255 @@ class Graph {
         return true;
     }
 
-    private static int[] answer;
-    private static BiFunction<Integer, Integer, Integer> function;
-
-    protected static int[] createSegmentTree(int[] startBase, int neutral, BiFunction<Integer, Integer, Integer> function) {
-        Graph.function = function;
-        int length = startBase.length;
-        int[] base;
-        if ((length & (length - 1)) != 0) {
-            int pow = 0;
-            while (length > 0) {
-                length >>= 1;
-                pow++;
+    protected static Pair<Long, int[][]> solveKruskal(int[][] edgesMatrix, final int countVertex, final int indexSort) {
+        int[][] answer = new int[countVertex - 1][2];
+        long sum = 0;
+        Arrays.sort(edgesMatrix, Comparator.comparingInt(value -> value[indexSort]));
+        SystemOfDisjointSets dsu = new SystemOfDisjointSets(countVertex);
+        for (int i = 0; i < countVertex; i++) {
+            dsu.makeSet(i);
+        }
+        int index = 0;
+        for (int[] value : edgesMatrix) {
+            if (dsu.mergeSets(value[0], value[1])) {
+                sum += value[indexSort];
+                answer[index] = new int[]{value[0], value[1]};
+                index++;
             }
-            pow--;
-            base = new int[2 << pow];
-            System.arraycopy(startBase, 0, base, 0, startBase.length);
-            Arrays.fill(base, startBase.length, base.length, neutral);
-
-        } else {
-            base = startBase;
         }
-        answer = new int[base.length << 1]; // maybe * 4
-        Arrays.fill(answer, neutral);
-        inDepth(base, 1, 0, base.length - 1);
-        return answer;
-    }
-
-    private static void inDepth(int[] base, int position, int low, int high) {
-        if (low == high) {
-            answer[position] = base[low];
-        } else {
-            int mid = (low + high) >> 1;
-            inDepth(base, position << 1, low, mid);
-            inDepth(base, (position << 1) + 1, mid + 1, high);
-            answer[position] = function.apply(answer[position << 1], answer[(position << 1) + 1]);
+        if (index < countVertex - 1) {
+            return Pair.createPair(null, null);
         }
+        return Pair.createPair(sum, answer);
     }
 
-    protected static int getValue(int[] base, int left, int right, int neutral) {
-        return findValue(base, 1, 0, ((base.length) >> 1) - 1, left, right, neutral);
-    }
+    static class SegmentTree {
 
-    private static int findValue(int[] base, int position, int low, int high, int left, int right, int neutral) {
-        if (left > right) {
-            return neutral;
+        private int[] segmentArray;
+        private BiFunction<Integer, Integer, Integer> function;
+
+        protected void setSegmentArray(int[] segmentArray) {
+            this.segmentArray = segmentArray;
         }
-        if (left == low && right == high) {
-            return base[position];
+
+        protected int[] getSegmentArray() {
+            return segmentArray.clone();
         }
-        int mid = (low + high) >> 1;
-        return function.apply(findValue(base, position << 1, low, mid, left, Math.min(right, mid), neutral),
-                findValue(base, (position << 1) + 1, mid + 1, high, Math.max(left, mid + 1), right, neutral));
-    }
 
-    protected static void replaceValue(int[] base, int index, int value) {
-        update(base, 1, 0, (base.length >> 1) - 1, index, value);
-    }
+        protected void setFunction(BiFunction<Integer, Integer, Integer> function) {
+            this.function = function;
+        }
 
-    private static void update(int[] base, int position, int low, int high, int index, int value) {
-        if (low == high) {
-            base[position] = value;
-        } else {
-            int mid = (low + high) >> 1;
-            if (index <= mid) {
-                update(base, position << 1, low, mid, index, value);
+        protected BiFunction<Integer, Integer, Integer> getFunction() {
+            return function;
+        }
+
+        SegmentTree() {
+
+        }
+
+        SegmentTree(int[] startBase, int neutral, BiFunction<Integer, Integer, Integer> function) {
+            this.function = function;
+            int length = startBase.length;
+            int[] base;
+            if ((length & (length - 1)) != 0) {
+                int pow = 0;
+                while (length > 0) {
+                    length >>= 1;
+                    pow++;
+                }
+                pow--;
+                base = new int[2 << pow];
+                System.arraycopy(startBase, 0, base, 0, startBase.length);
+                Arrays.fill(base, startBase.length, base.length, neutral);
+
             } else {
-                update(base, (position << 1) + 1, mid + 1, high, index, value);
+                base = startBase;
             }
-            base[position] = function.apply(base[position << 1], base[(position << 1) + 1]);
+            segmentArray = new int[base.length << 1]; // maybe * 4
+            Arrays.fill(segmentArray, neutral);
+            inDepth(base, 1, 0, base.length - 1);
         }
+
+        private void inDepth(int[] base, int position, int low, int high) {
+            if (low == high) {
+                segmentArray[position] = base[low];
+            } else {
+                int mid = (low + high) >> 1;
+                inDepth(base, position << 1, low, mid);
+                inDepth(base, (position << 1) + 1, mid + 1, high);
+                segmentArray[position] = function.apply(segmentArray[position << 1], segmentArray[(position << 1) + 1]);
+            }
+        }
+
+        protected int getValue(int left, int right, int neutral) {
+            return findValue(1, 0, ((segmentArray.length) >> 1) - 1, left, right, neutral);
+        }
+
+        private int findValue(int position, int low, int high, int left, int right, int neutral) {
+            if (left > right) {
+                return neutral;
+            }
+            if (left == low && right == high) {
+                return segmentArray[position];
+            }
+            int mid = (low + high) >> 1;
+            return function.apply(findValue(position << 1, low, mid, left, Math.min(right, mid), neutral),
+                    findValue((position << 1) + 1, mid + 1, high, Math.max(left, mid + 1), right, neutral));
+        }
+
+        protected void replaceValue(int index, int value) {
+            update(1, 0, (segmentArray.length >> 1) - 1, index, value);
+        }
+
+        private void update(int position, int low, int high, int index, int value) {
+            if (low == high) {
+                segmentArray[position] = value;
+            } else {
+                int mid = (low + high) >> 1;
+                if (index <= mid) {
+                    update(position << 1, low, mid, index, value);
+                } else {
+                    update((position << 1) + 1, mid + 1, high, index, value);
+                }
+                segmentArray[position] = function.apply(segmentArray[position << 1], segmentArray[(position << 1) + 1]);
+            }
+        }
+    }
+
+    static class SegmentTreeGeneric<T> {
+
+        private Object[] segmentArray;
+        private BiFunction<T, T, T> function;
+
+        protected void setSegmentArray(T[] segmentArray) {
+            this.segmentArray = segmentArray;
+        }
+
+        protected Object getSegmentArray() {
+            return segmentArray.clone();
+        }
+
+        protected void setFunction(BiFunction<T, T, T> function) {
+            this.function = function;
+        }
+
+        protected BiFunction<T, T, T> getFunction() {
+            return function;
+        }
+
+        SegmentTreeGeneric() {
+
+        }
+
+        SegmentTreeGeneric(T[] startBase, T neutral, BiFunction<T, T, T> function) {
+            this.function = function;
+            int length = startBase.length;
+            Object[] base;
+            if ((length & (length - 1)) != 0) {
+                int pow = 0;
+                while (length > 0) {
+                    length >>= 1;
+                    pow++;
+                }
+                pow--;
+                base = new Object[2 << pow];
+                System.arraycopy(startBase, 0, base, 0, startBase.length);
+                Arrays.fill(base, startBase.length, base.length, neutral);
+
+            } else {
+                base = startBase;
+            }
+            segmentArray = new Object[base.length << 1]; // maybe * 4
+            Arrays.fill(segmentArray, neutral);
+            inDepth(base, 1, 0, base.length - 1);
+        }
+
+        private void inDepth(Object[] base, int position, int low, int high) {
+            if (low == high) {
+                segmentArray[position] = base[low];
+            } else {
+                int mid = (low + high) >> 1;
+                inDepth(base, position << 1, low, mid);
+                inDepth(base, (position << 1) + 1, mid + 1, high);
+                segmentArray[position] = function.apply((T) segmentArray[position << 1], (T) segmentArray[(position << 1) + 1]);
+            }
+        }
+
+        protected T getValue(int left, int right, T neutral) {
+            return findValue(1, 0, ((segmentArray.length) >> 1) - 1, left, right, neutral);
+        }
+
+        private T findValue(int position, int low, int high, int left, int right, T neutral) {
+            if (left > right) {
+                return neutral;
+            }
+            if (left == low && right == high) {
+                return (T) segmentArray[position];
+            }
+            int mid = (low + high) >> 1;
+            return function.apply(findValue(position << 1, low, mid, left, Math.min(right, mid), neutral),
+                    findValue((position << 1) + 1, mid + 1, high, Math.max(left, mid + 1), right, neutral));
+        }
+
+        protected void replaceValue(int index, T value) {
+            update(1, 0, (segmentArray.length >> 1) - 1, index, value);
+        }
+
+        private void update(int position, int low, int high, int index, T value) {
+            if (low == high) {
+                segmentArray[position] = value;
+            } else {
+                int mid = (low + high) >> 1;
+                if (index <= mid) {
+                    update(position << 1, low, mid, index, value);
+                } else {
+                    update((position << 1) + 1, mid + 1, high, index, value);
+                }
+                segmentArray[position] = function.apply((T) segmentArray[position << 1], (T) segmentArray[(position << 1) + 1]);
+            }
+        }
+    }
+}
+
+class SystemOfDisjointSets {
+
+    private int[] rank;
+    private int[] ancestor;
+
+    SystemOfDisjointSets(int size) {
+        this.rank = new int[size];
+        this.ancestor = new int[size];
+    }
+
+    protected void makeSet(int value) {
+        ancestor[value] = value;
+        rank[value] = 0;
+    }
+
+    protected int findSet(int value) {
+        if (value == ancestor[value]) {
+            return value;
+        }
+        return ancestor[value] = findSet(ancestor[value]);
+    }
+
+    protected boolean mergeSets(int first, int second) {
+        first = findSet(first);
+        second = findSet(second);
+        if (first != second) {
+            if (rank[first] < rank[second]) {
+                int number = first;
+                first = second;
+                second = number;
+            }
+            ancestor[second] = first;
+            if (rank[first] == rank[second]) {
+                rank[first]++;
+            }
+            return true;
+        }
+        return false;
     }
 }
 
@@ -621,7 +805,7 @@ class FastSort {
         int pointer0, pointer, pointer1, number = 4, NewPointer, count;
         Integer[][] NewBuffer;
         Integer[][] OldBuffer;
-        length = (size / 4) + ((size % 4) == 0 ? 0 : 1);
+        length = (size >> 2) + ((size % 4) == 0 ? 0 : 1);
         while (true) {
             pointer0 = 0;
             count = (number >> 1) - 1;
