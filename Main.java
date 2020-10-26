@@ -1,20 +1,18 @@
-
 import java.io.*;
 import java.lang.*;
 import java.util.*;
 import java.util.function.BiFunction;
 
-public class Main extends IO {
+public class Main extends IO{
 
-    public static void main(String[] args) throws Exception {
+    public static void main(String[] args) throws Exception{
 
     }
 }
 
-
 class math {
 
-    protected static int remains = 0x989687;
+    protected static long remains = 0x3B9ACA07; // 1000000007
 
     protected static int gcd(int a, int b) { // NOD
         if (b == 0) {
@@ -89,6 +87,11 @@ class Int implements Comparable<Integer> {
         this.value = value;
     }
 
+    public Int add(int value) {
+        this.value += value;
+        return this;
+    }
+
     @Override
     public int compareTo(Integer o) {
         return (this.value < o) ? -1 : ((this.value == o) ? 0 : 1);
@@ -112,6 +115,7 @@ class Int implements Comparable<Integer> {
         super.finalize();
     }
 }
+
 
 class Fraction<T extends Number> extends Pair {
 
@@ -351,11 +355,11 @@ class Graph {
     private Integer[] ancestor;
 
     public int[][] getBase() {
-        return base.clone();
+        return base;
     }
 
     public boolean[] getUsed() {
-        return used.clone();
+        return used;
     }
 
     public int getQuantity() {
@@ -363,7 +367,7 @@ class Graph {
     }
 
     public Integer[] getAncestor() {
-        return ancestor.clone();
+        return ancestor;
     }
 
     public void setBase(int[][] base) {
@@ -378,18 +382,18 @@ class Graph {
     }
 
 
-    protected void edgesMatrixToDefault(int length, int quantity, boolean readConsole, int[][] value) throws Exception {
+    protected void edgesMatrixToDefault(int length, int inputQuantity, boolean readConsole, int[][] value) throws Exception {
         base = new int[length][];
         List<ArrayList<Integer>> inputBase = new ArrayList<>();
         for (int i = 0; i < length; i++) {
             inputBase.add(new ArrayList<>());
         }
-        for (int i = 0; i < quantity; i++) {
+        for (int i = 0; i < inputQuantity; i++) {
             int[] input = readConsole ? IO.readArrayInt(" ") : value[i];
             inputBase.get(input[0] - 1).add(input[1] - 1);
-            //inputBase.get(input[0] - 1).add(input[2]); // price
+            inputBase.get(input[0] - 1).add(input[2]); // price
             inputBase.get(input[1] - 1).add(input[0] - 1);
-            //inputBase.get(input[1] - 1).add(input[2]); // price
+            inputBase.get(input[1] - 1).add(input[2]); // price
         }
         for (int i = 0; i < length; i++) {
             base[i] = inputBase.get(i).stream().mapToInt(Integer::intValue).toArray();
@@ -414,21 +418,21 @@ class Graph {
         start(length);
     }
 
-    protected void dfs(int position) throws Exception {
+    protected int dfs(int position) throws Exception {
         used[position] = true;
-        quantity++;
         int next;
-        for (int index = 0; index < base[position].length; index++) {
+        int count = 0;
+        for (int index = 0; index < base[position].length; index += 2) {
             next = base[position][index];
             if (!used[next]) {
                 ancestor[next] = position;
-                dfs(next);
-            } /*else {
-                if (next != ancestor[position]) { // if cycle
-                    throw new Exception();
-                }
-            }*/
+                count += dfs(next);
+            }
         }
+        if (base[position].length == 2 && base[position][0] == ancestor[position]) {
+            return 1;
+        }
+        return count;
     }
 
     protected int dijkstra(int start, int stop, int size) {
@@ -702,23 +706,23 @@ class Graph {
 class SystemOfDisjointSets {
 
     private int[] rank;
-    private int[] ancestor;
+    private int[] dsu;
 
     SystemOfDisjointSets(int size) {
         this.rank = new int[size];
-        this.ancestor = new int[size];
+        this.dsu = new int[size];
     }
 
     protected void makeSet(int value) {
-        ancestor[value] = value;
+        dsu[value] = value;
         rank[value] = 0;
     }
 
     protected int findSet(int value) {
-        if (value == ancestor[value]) {
+        if (value == dsu[value]) {
             return value;
         }
-        return ancestor[value] = findSet(ancestor[value]);
+        return dsu[value] = findSet(dsu[value]);
     }
 
     protected boolean mergeSets(int first, int second) {
@@ -730,7 +734,7 @@ class SystemOfDisjointSets {
                 first = second;
                 second = number;
             }
-            ancestor[second] = first;
+            dsu[second] = first;
             if (rank[first] == rank[second]) {
                 rank[first]++;
             }
@@ -1058,25 +1062,6 @@ class IO {
             int length = array.length;
             for (int index = 0; index < length; index++) {
                 write.write(Integer.toString(array[index]));
-                if (index + 1 != length) {
-                    write.write(split);
-                }
-            }
-            if (enter) {
-                writeEnter();
-            }
-        } catch (Exception error) {
-        }
-    }
-
-    protected static void writeArray(Int[] array, String split, boolean enter) {
-        if (write == null) {
-            startOutput();
-        }
-        try {
-            int length = array.length;
-            for (int index = 0; index < length; index++) {
-                write.write(Integer.toString(array[index].value));
                 if (index + 1 != length) {
                     write.write(split);
                 }
