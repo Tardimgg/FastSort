@@ -4,11 +4,12 @@ import java.io.*;
 import java.lang.*;
 import java.util.*;
 import java.util.function.BiFunction;
+import java.util.stream.Collectors;
 
 public class Main extends IO {
 
     public static void main(String[] args) throws Exception {
-        
+
     }
 }
 
@@ -779,39 +780,41 @@ interface Method<T> {
 class FastSort {
 
     static enum TypeSort {
-        Shell,
-        Heap,
-        Merge,
-        My,
-        Insertion
+        RANDOM,
+        SHELL,
+        HEAP,
+        MERGE,
+        STRAIGHT_MERGE,
+        INSERTION
 
     }
 
-    protected static int[] sort(int[] array, int shellHeapMergeMyInsertionSort) {
-        sort(array, shellHeapMergeMyInsertionSort, array.length);
+    protected static int[] sort(int[] array, TypeSort typeSort) {
+        sort(array, typeSort, array.length);
         return array;
     }
 
-    protected static int[] sortClone(int[] array, int shellHeapMergeMyInsertionSort) {
+    protected static int[] sortClone(int[] array, TypeSort typeSort) {
         int[] base = array.clone();
-        sort(base, shellHeapMergeMyInsertionSort, array.length);
+        sort(base, typeSort, array.length);
         return base;
     }
 
-    private static void sort(int[] array, int ShellHeapMergeMyInsertionSort, int length) {
-        if (ShellHeapMergeMyInsertionSort < 0 || ShellHeapMergeMyInsertionSort > 4) {
+    private static void sort(int[] array, TypeSort typeSort, int length) {
+        if (typeSort == null || typeSort == TypeSort.RANDOM) {
             Random random = new Random();
-            ShellHeapMergeMyInsertionSort = random.nextInt(4);
+            int index = random.nextInt(4);
+            typeSort = TypeSort.values()[index];
         }
-        if (ShellHeapMergeMyInsertionSort == 0) {
+        if (typeSort == TypeSort.SHELL) {
             ShellSort(array);
-        } else if (ShellHeapMergeMyInsertionSort == 1) {
+        } else if (typeSort == TypeSort.HEAP) {
             HeapSort(array);
-        } else if (ShellHeapMergeMyInsertionSort == 2) {
+        } else if (typeSort == TypeSort.MERGE) {
             MergeSort(array, 0, length - 1);
-        } else if (ShellHeapMergeMyInsertionSort == 3) {
+        } else if (typeSort == TypeSort.STRAIGHT_MERGE) {
             straightMergeSort(array, length);
-        } else if (ShellHeapMergeMyInsertionSort == 4) {
+        } else if (typeSort == TypeSort.INSERTION) {
             insertionSort(array);
         }
     }
@@ -1149,13 +1152,7 @@ class IO {
             startOutput();
         }
         try {
-            int length = array.length;
-            for (int index = 0; index < length; index++) {
-                write.write(array[index]);
-                if (index + 1 != length) {
-                    write.write(split);
-                }
-            }
+            write.write(String.join(split, array));
             if (enter) {
                 writeEnter();
             }
