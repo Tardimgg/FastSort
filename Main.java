@@ -1,12 +1,14 @@
+//package start;
+
 import java.io.*;
 import java.lang.*;
 import java.util.*;
 import java.util.function.BiFunction;
 
-public class Main extends IO{
+public class Main extends IO {
 
-    public static void main(String[] args) throws Exception{
-
+    public static void main(String[] args) throws Exception {
+        
     }
 }
 
@@ -57,6 +59,23 @@ class math {
     protected static long lcm(long a, long b) {
         return a / gcd(a, b) * b;
 
+    }
+
+    protected static long mult(long a, long b) {
+        return ((a % remains) * (b % remains)) % remains;
+    }
+
+    protected static long binpow(long base, long power) {
+        long res = 1;
+        while (power != 0)
+            if ((power & 1) == 1) {
+                res = mult(res, base);
+                power--;
+            } else {
+                base = mult(base, base);
+                power >>= 1;
+            }
+        return res;
     }
 
     protected static double log(double value, int base) {
@@ -428,6 +447,11 @@ class Graph {
                 ancestor[next] = position;
                 count += dfs(next);
             }
+             /*else {
+                if (next != ancestor[position]) { // if cycle
+                    throw new Exception();
+                }
+            }*/
         }
         if (base[position].length == 2 && base[position][0] == ancestor[position]) {
             return 1;
@@ -748,20 +772,29 @@ interface Array {
     void useArray(int[] a);
 }
 
-interface Method {
-    void use();
+interface Method<T> {
+    void use(T value);
 }
 
 class FastSort {
 
-    protected static int[] sort(int[] array, int ShellHeapMergeMyInsertionSort) {
-        sort(array, ShellHeapMergeMyInsertionSort, array.length);
+    static enum TypeSort {
+        Shell,
+        Heap,
+        Merge,
+        My,
+        Insertion
+
+    }
+
+    protected static int[] sort(int[] array, int shellHeapMergeMyInsertionSort) {
+        sort(array, shellHeapMergeMyInsertionSort, array.length);
         return array;
     }
 
-    protected static int[] sortClone(int[] array, int ShellHeapMergeMyInsertionSort) {
+    protected static int[] sortClone(int[] array, int shellHeapMergeMyInsertionSort) {
         int[] base = array.clone();
-        sort(base, ShellHeapMergeMyInsertionSort, array.length);
+        sort(base, shellHeapMergeMyInsertionSort, array.length);
         return base;
     }
 
@@ -1112,6 +1145,25 @@ class IO {
     }
 
     public static void writeArray(String[] array, String split, boolean enter) {
+        if (write == null) {
+            startOutput();
+        }
+        try {
+            int length = array.length;
+            for (int index = 0; index < length; index++) {
+                write.write(array[index]);
+                if (index + 1 != length) {
+                    write.write(split);
+                }
+            }
+            if (enter) {
+                writeEnter();
+            }
+        } catch (Exception ignored) {
+        }
+    }
+
+    public static void writeArray(char[] array, String split, boolean enter) {
         if (write == null) {
             startOutput();
         }
