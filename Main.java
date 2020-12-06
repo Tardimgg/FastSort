@@ -4,7 +4,6 @@ import java.io.*;
 import java.lang.*;
 import java.util.*;
 import java.util.function.BiFunction;
-import java.util.stream.Collectors;
 
 public class Main extends IO {
 
@@ -779,7 +778,7 @@ interface Method<T> {
 
 class FastSort {
 
-    static enum TypeSort {
+    enum TypeSort {
         RANDOM,
         SHELL,
         HEAP,
@@ -803,7 +802,7 @@ class FastSort {
     private static void sort(int[] array, TypeSort typeSort, int length) {
         if (typeSort == null || typeSort == TypeSort.RANDOM) {
             Random random = new Random();
-            int index = random.nextInt(4);
+            int index = random.nextInt(4) + 1;
             typeSort = TypeSort.values()[index];
         }
         if (typeSort == TypeSort.SHELL) {
