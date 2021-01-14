@@ -2,19 +2,34 @@
 
 import java.io.*;
 import java.lang.*;
+import java.math.BigInteger;
 import java.util.*;
 import java.util.function.BiFunction;
 
 public class Main extends IO {
 
     public static void main(String[] args) throws Exception {
-
+        
     }
+
 }
 
 class math {
 
     protected static long remains = 0x3B9ACA07; // 1000000007
+
+    static Integer[] convertBase(int value, int toBase) {
+        if (toBase == 1) {
+            throw new InputMismatchException("base = 1");
+        }
+        List<Integer> result = new ArrayList<>();
+        while (value / toBase >= 1) {
+            result.add(0, value % toBase);
+            value /= toBase;
+        }
+        result.add(0, value % toBase);
+        return result.toArray(Integer[]::new);
+    }
 
     protected static int gcd(int a, int b) { // NOD
         if (b == 0) {
@@ -94,6 +109,21 @@ class math {
             return solveFactorial(number - 1) * number;
         }
         return 1;
+    }
+
+    static boolean[] solveEratosfen(int count){
+        boolean[] isNotPrimes = new boolean[count];
+        Arrays.fill(isNotPrimes, true);
+        isNotPrimes[0] = false;
+        isNotPrimes[1] = false;
+        for (int i = 2; i < isNotPrimes.length; i++) {
+            if (isNotPrimes[i]) {
+                for (int j = 2; i * j < isNotPrimes.length; j++) {
+                    isNotPrimes[i * j] = false;
+                }
+            }
+        }
+        return isNotPrimes;
     }
 
 }
@@ -776,6 +806,82 @@ interface Method<T> {
     void use(T value);
 }
 
+
+class BigNumber {
+
+    private static int size = 100;
+
+    private static int[] pr = new int[size];
+    private static int[][] r = new int[size][size];
+    private int[] a = new int[size];
+
+    static void init() {
+        for (int x = 1000_000_000, i = 0; i < size; ++x)
+            if (BigInteger.valueOf(x).isProbablePrime(100))
+                pr[i++] = x;
+
+        for (int i = 0; i < size; ++i)
+            for (int j = i + 1; j < size; ++j)
+                r[i][j] = BigInteger.valueOf(pr[i]).modInverse(
+                        BigInteger.valueOf(pr[j])).intValue();
+    }
+
+    public BigNumber() {
+    }
+
+    public BigNumber(int n) {
+        for (int i = 0; i < size; ++i)
+            a[i] = n % pr[i];
+    }
+
+    public BigNumber(BigInteger n) {
+        for (int i = 0; i < size; ++i)
+            a[i] = n.mod(BigInteger.valueOf(pr[i])).intValue();
+    }
+
+    public BigNumber add(BigNumber n) {
+        BigNumber result = new BigNumber();
+        for (int i = 0; i < size; ++i)
+            result.a[i] = (a[i] + n.a[i]) % pr[i];
+        return result;
+    }
+
+    public BigNumber subtract(BigNumber n) {
+        BigNumber result = new BigNumber();
+        for (int i = 0; i < size; ++i)
+            result.a[i] = (a[i] - n.a[i] + pr[i]) % pr[i];
+        return result;
+    }
+
+    public BigNumber multiply(BigNumber n) {
+        BigNumber result = new BigNumber();
+        for (int i = 0; i < size; ++i)
+            result.a[i] = (int) (((long) a[i] * n.a[i]) % pr[i]);
+        return result;
+    }
+
+    public BigInteger bigIntegerValue(boolean can_be_negative) {
+        BigInteger result = BigInteger.ZERO,
+                mult = BigInteger.ONE;
+        int[] x = new int[size];
+        for (int i = 0; i < size; ++i) {
+            x[i] = a[i];
+            for (int j = 0; j < i; ++j) {
+                long cur = (long) (x[i] - x[j]) * r[j][i];
+                x[i] = (int) ((cur % pr[i] + pr[i]) % pr[i]);
+            }
+            result = result.add(mult.multiply(BigInteger.valueOf(x[i])));
+            mult = mult.multiply(BigInteger.valueOf(pr[i]));
+        }
+
+        if (can_be_negative)
+            if (result.compareTo(mult.shiftRight(1)) >= 0)
+                result = result.subtract(mult);
+
+        return result;
+    }
+}
+
 class FastSort {
 
     enum TypeSort {
@@ -805,16 +911,23 @@ class FastSort {
             int index = random.nextInt(4) + 1;
             typeSort = TypeSort.values()[index];
         }
-        if (typeSort == TypeSort.SHELL) {
-            ShellSort(array);
-        } else if (typeSort == TypeSort.HEAP) {
-            HeapSort(array);
-        } else if (typeSort == TypeSort.MERGE) {
-            MergeSort(array, 0, length - 1);
-        } else if (typeSort == TypeSort.STRAIGHT_MERGE) {
-            straightMergeSort(array, length);
-        } else if (typeSort == TypeSort.INSERTION) {
-            insertionSort(array);
+        switch (typeSort) {
+            case SHELL:
+                ShellSort(array);
+                break;
+            case HEAP:
+                HeapSort(array);
+                break;
+            case MERGE:
+                MergeSort(array, 0, length - 1);
+                break;
+            case STRAIGHT_MERGE:
+                straightMergeSort(array, length);
+                break;
+            case INSERTION:
+                insertionSort(array);
+                break;
+
         }
     }
 
