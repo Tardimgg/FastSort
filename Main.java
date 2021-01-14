@@ -112,18 +112,18 @@ class math {
     }
 
     static boolean[] solveEratosfen(int count){
-        boolean[] isNotPrimes = new boolean[count];
-        Arrays.fill(isNotPrimes, true);
-        isNotPrimes[0] = false;
-        isNotPrimes[1] = false;
-        for (int i = 2; i < isNotPrimes.length; i++) {
-            if (isNotPrimes[i]) {
-                for (int j = 2; i * j < isNotPrimes.length; j++) {
-                    isNotPrimes[i * j] = false;
+        boolean[] isPrimes = new boolean[count];
+        Arrays.fill(isPrimes, true);
+        isPrimes[0] = false;
+        isPrimes[1] = false;
+        for (int i = 2; i < isPrimes.length; i++) {
+            if (isPrimes[i]) {
+                for (int j = 2; i * j < isPrimes.length; j++) {
+                    isPrimes[i * j] = false;
                 }
             }
         }
-        return isNotPrimes;
+        return isPrimes;
     }
 
 }
