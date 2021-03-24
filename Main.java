@@ -128,6 +128,113 @@ class math {
 
 }
 
+class ArraySegments<T extends Comparable<? super T>> {
+ 
+    private List<Pair<T, T>> geps;
+ 
+    ArraySegments() {
+        this.geps = new ArrayList<>();
+    }
+ 
+    void addGep(T start, T stop) {
+        int indexStart = indexOf(start);
+        int indexStop = indexOf(stop);
+        if (indexStart != -1 && indexStop == -1) {
+            this.geps.get(indexStart).setSecond(stop);
+            T startGep = this.geps.get(indexStart).getFirstElement();
+            T stopGep = this.geps.get(indexStart).getSecondElement();
+            int i = indexStart + 1;
+            while (i < geps.size()) {
+                if (this.geps.get(i).getFirstElement().compareTo(startGep) >= 0 && this.geps.get(i).getSecondElement().compareTo(stopGep) <= 0) {
+                    this.geps.remove(i);
+                } else {
+                    break;
+                }
+            }
+        } else if (indexStart != -1 && indexStop != -1) {
+            this.geps.get(indexStart).setSecond(this.geps.get(indexStop).getSecondElement());
+            if (indexStart == indexStop) {
+                return;
+            }
+            this.geps.remove(indexStop);
+            T startGep = this.geps.get(indexStart).getFirstElement();
+            T stopGep = this.geps.get(indexStart).getSecondElement();
+            int i = indexStart + 1;
+            while (i < this.geps.size()) {
+                if (this.geps.get(i).getFirstElement().compareTo(startGep) >= 0 && this.geps.get(i).getSecondElement().compareTo(stopGep) <= 0) {
+                    this.geps.remove(i);
+                } else {
+                    break;
+                }
+            }
+        } else if (indexStart == -1 && indexStop != -1) {
+            this.geps.get(indexStop).setFirst(start);
+            T startGep = this.geps.get(indexStop).getFirstElement();
+            T stopGep = this.geps.get(indexStop).getSecondElement();
+            int i = indexStop - 1;
+            while (i >= 0) {
+                if (this.geps.get(i).getFirstElement().compareTo(startGep) >= 0 && this.geps.get(i).getSecondElement().compareTo(stopGep) <= 0) {
+                    this.geps.remove(i);
+                } else {
+                    break;
+                }
+                i--;
+            }
+        } else if (indexStart == -1 && indexStop == -1) {
+            if (this.geps.size() != 0) {
+                int l = 0;
+                int r = this.geps.size();
+                while (l + 1 != r) {
+                    int mid = (l + r) >> 1;
+                    if (this.geps.get(mid).getFirstElement().compareTo(start) < 0) {
+                        l = mid;
+                    } else {
+                        r = mid;
+                    }
+                }
+                this.geps.add(l + 1, Pair.createPair(start, stop));
+                indexStart = l + 1;
+            } else {
+                this.geps.add(Pair.createPair(start, stop));
+                return;
+            }
+            int i = indexStart + 1;
+            while (i < this.geps.size()) {
+                if (this.geps.get(i).getFirstElement().compareTo(start) >= 0 && this.geps.get(i).getSecondElement().compareTo(stop) <= 0) {
+                    this.geps.remove(i);
+                } else {
+                    break;
+                }
+            }
+ 
+        }
+    }
+ 
+    int indexOf(T value) {
+        if (geps.size() == 0) {
+            return -1;
+        }
+        int l = 0;
+        int r = geps.size();
+        while (l + 1 != r) {
+            int mid = (l + r) >> 1;
+            if (geps.get(mid).getFirstElement().compareTo(value) <= 0) {
+                l = mid;
+            } else {
+                r = mid;
+            }
+        }
+        if (geps.get(l).getFirstElement().compareTo(value) <= 0 && geps.get(l).getSecondElement().compareTo(value) >= 0) {
+            return l;
+        }
+        return -1;
+    }
+ 
+    void clear() {
+        this.geps.clear();
+    }
+}
+
 class Int implements Comparable<Integer> {
 
     protected int value;
