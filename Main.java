@@ -9,9 +9,8 @@ import java.util.function.BiFunction;
 public class Main extends IO {
 
     public static void main(String[] args) throws Exception {
-        
-    }
 
+    }
 }
 
 class math {
@@ -111,7 +110,7 @@ class math {
         return 1;
     }
 
-    static boolean[] solveEratosfen(int count){
+    static boolean[] solveEratosfen(int count) {
         boolean[] isPrimes = new boolean[count];
         Arrays.fill(isPrimes, true);
         isPrimes[0] = false;
@@ -129,13 +128,13 @@ class math {
 }
 
 class ArraySegments<T extends Comparable<? super T>> {
- 
+
     private List<Pair<T, T>> geps;
- 
+
     ArraySegments() {
         this.geps = new ArrayList<>();
     }
- 
+
     void addGep(T start, T stop) {
         int indexStart = indexOf(start);
         int indexStop = indexOf(stop);
@@ -206,10 +205,10 @@ class ArraySegments<T extends Comparable<? super T>> {
                     break;
                 }
             }
- 
+
         }
     }
- 
+
     int indexOf(T value) {
         if (geps.size() == 0) {
             return -1;
@@ -229,7 +228,7 @@ class ArraySegments<T extends Comparable<? super T>> {
         }
         return -1;
     }
- 
+
     void clear() {
         this.geps.clear();
     }
@@ -1248,42 +1247,42 @@ class IO {
         }
     }
 
-    protected static int readInt() throws Exception {
+    protected static int readInt() throws IOException {
         if (read == null) {
             startInput();
         }
         return Integer.parseInt(read.readLine());
     }
 
-    protected static long readLong() throws Exception {
+    protected static long readLong() throws IOException {
         if (read == null) {
             startInput();
         }
         return Long.parseLong(read.readLine());
     }
 
-    protected static String readString() throws Exception {
+    protected static String readString() throws IOException {
         if (read == null) {
             startInput();
         }
         return read.readLine();
     }
 
-    protected static int[] readArrayInt(String split) throws Exception {
+    protected static int[] readArrayInt(String split) throws IOException {
         if (read == null) {
             startInput();
         }
         return Arrays.stream(read.readLine().split(split)).mapToInt(Integer::parseInt).toArray();
     }
 
-    protected static long[] readArrayLong(String split) throws Exception {
+    protected static long[] readArrayLong(String split) throws IOException {
         if (read == null) {
             startInput();
         }
         return Arrays.stream(read.readLine().split(split)).mapToLong(Long::parseLong).toArray();
     }
 
-    protected static String[] readArrayString(String split) throws Exception {
+    protected static String[] readArrayString(String split) throws IOException {
         if (read == null) {
             startInput();
         }
@@ -1380,6 +1379,25 @@ class IO {
     }
 
     public static void writeArray(char[] array, String split, boolean enter) {
+        if (write == null) {
+            startOutput();
+        }
+        try {
+            int length = array.length;
+            for (int index = 0; index < length; index++) {
+                write.write(array[index]);
+                if (index + 1 != length) {
+                    write.write(split);
+                }
+            }
+            if (enter) {
+                writeEnter();
+            }
+        } catch (Exception ignored) {
+        }
+    }
+
+    public static void writeArray(Character[] array, String split, boolean enter) {
         if (write == null) {
             startOutput();
         }
@@ -1527,7 +1545,7 @@ class IO {
         }
     }
 
-    protected static void print(boolean exit) throws Exception {
+    protected static void print(boolean exit) throws IOException {
         if (exit) {
             print();
         } else {
@@ -1535,7 +1553,7 @@ class IO {
         }
     }
 
-    protected static void print() throws Exception {
+    protected static void print() throws IOException {
         if (write == null) {
             return;
         }
